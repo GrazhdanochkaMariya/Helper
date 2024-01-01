@@ -1,0 +1,48 @@
+.idea/
+__pycache__/
+.vscode/
+.scannerwork/
+
+# Logs and databases
+*.log
+*.sql
+*.sqlite
+
+# Docker files
+
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Environments
+.env
+.env.docker
+.venv
+.env.docker
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.cache
+nosetests.xml
+
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/

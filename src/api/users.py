@@ -1,21 +1,33 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.api.auth import get_current_user
+from src.crud.profile import profile_crud
 from src.db.db import get_db
+from src.schemas.profile import ProfileSchemaRead
+from src.utils import responses
 
 router = APIRouter()
 
 db_dependency = Annotated[AsyncSession, Depends(get_db)]
+auth_dependency = Annotated[dict, Depends(get_current_user)]
 
-
-@router.get("/linkedin/{profile_url}")
+@router.get(
+    "/linkedin",
+    response_model=ProfileSchemaRead,
+    responses=responses
+)
 async def get_linkedin_profile(
-        profile_url: str,
-        db: AsyncSession = Depends(get_db),
+    auth: auth_dependency,
+    profile_url: str,
+    db: AsyncSession = Depends(get_db),
 ):
-    # profile =
-    # if profile_id not in linkedin_profiles:
-    #     raise HTTPException(status_code=404, detail="Profile not found")
-    return {"message": f"Checking LinkedIn profile: {profile_url}"}
+    """Get user`s LinkedIn profile"""
+    profile = await profile_crud.get_profile(db=db, profile_url=profile_url)
+
+    if profile:
+        return profile
+    else:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found")

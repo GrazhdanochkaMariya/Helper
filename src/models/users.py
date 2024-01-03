@@ -20,3 +20,11 @@ class LinkedInProfile(Base):
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     linkedin_url = Column(String, unique=True, nullable=False)
     user = relationship("User", back_populates="linkedin_profiles")
+
+
+class Admin(Base):
+    __tablename__ = "admins"
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, unique=True, index=True)
+    password = Column(String)

@@ -7,12 +7,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from jose import jwt, JWTError
 
 from src.crud.auth import admin_crud
-from src.db.db import get_db
+from src.db.session import get_async_session
 from src.utils import responses, create_access_token, SECRET_KEY, ALGORITHM
 
 router = APIRouter()
 
-db_dependency = Annotated[AsyncSession, Depends(get_db)]
+db_dependency = Annotated[AsyncSession, Depends(get_async_session)]
 oauth2_bearer = OAuth2PasswordBearer(tokenUrl="auth/token")
 
 
@@ -21,7 +21,7 @@ async def login_for_access_token(
         db: db_dependency,
         form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
 ):
-    user = admin_crud.get_admin(username=form_data.username, password=form_data.password, db=db)
+    user = await admin_crud.get_admin(username=form_data.username, password=form_data.password, db=db)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

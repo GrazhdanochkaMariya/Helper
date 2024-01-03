@@ -3,8 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 
 from src.crud.base import CRUDBase
-from src.models.auth import Admin
-from src.models.users import LinkedInProfile
+from src.models.users import Admin
 from src.schemas.auth import AdminSchemaCreate
 
 
@@ -57,4 +56,4 @@ class CRUDProfile(CRUDBase[Admin, AdminSchemaCreate]):
         return item.scalars().one_or_none()
 
 
-admin_crud = CRUDProfile(LinkedInProfile)
+admin_crud = CRUDProfile(Admin)

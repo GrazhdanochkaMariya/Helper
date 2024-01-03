@@ -1,34 +1,40 @@
 import asyncio
 from logging.config import fileConfig
 
-from sqlalchemy import create_engine
-from sqlalchemy.engine import Connection
-
+from sqlalchemy import engine_from_config, create_engine, Connection
+from sqlalchemy import pool
 
 from alembic import context
 from sqlalchemy.ext.asyncio import AsyncEngine
 
-from src.db.session import USERNAME, PASSWORD, HOSTNAME, DB
-from src.models import users
+from config import DB_HOST, DB_PORT, DB_USER, DB_NAME, DB_PASS
+
+from src.models.users import Base
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
+
+section = config.config_ini_section
+config.set_section_option(section, "DB_HOST", DB_HOST)
+config.set_section_option(section, "DB_PORT", DB_PORT)
+config.set_section_option(section, "DB_USER", DB_USER)
+config.set_section_option(section, "DB_NAME", DB_NAME)
+config.set_section_option(section, "DB_PASS", DB_PASS)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-
 # DB URL set up
-DB_URL = f"postgresql+asyncpg://{USERNAME}:{PASSWORD}@{HOSTNAME}:5432/{DB}"
+DB_URL = f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 config.set_main_option("sqlalchemy.url", DB_URL)
 # add your model's MetaData object here
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = users.Base.metadata
+target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -54,13 +60,15 @@ def run_migrations_offline() -> None:
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
+        compare_type=True
     )
 
     with context.begin_transaction():
         context.run_migrations()
 
+
 def do_run_migrations(connection: Connection) -> None:
-    context.configure(connection=connection, target_metadata=target_metadata)
+    context.configure(connection=connection, target_metadata=target_metadata, compare_type=True)
 
     with context.begin_transaction():
         context.run_migrations()

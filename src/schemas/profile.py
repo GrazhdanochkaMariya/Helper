@@ -1,9 +1,9 @@
 from pydantic import BaseModel
 
 
-class ProfileSchemaRead(BaseModel):
+class ContactSchemaRead(BaseModel):
     """Schema for profile"""
 
     id: int
-    user_id: int
-    linkedin_url: str
+    lead_name: str
+    linkedin_profile: str

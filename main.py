@@ -8,6 +8,7 @@ from starlette import status
 
 from src.api.users import router as users_router
 from src.api.auth import router as admin_auth
+from src.api.transfer import router as transfer_router
 
 
 app = FastAPI(
@@ -19,6 +20,7 @@ app = FastAPI(
 
 app.include_router(users_router, prefix="/api", tags=["Contacts"])
 app.include_router(admin_auth, prefix="/api/auth", tags=["Auth"])
+app.include_router(transfer_router, prefix="/api", tags=["Transfer"])
 
 security = HTTPBasic()
 

@@ -7,7 +7,7 @@ from src.models.users import Admin
 from src.schemas.auth import AdminSchemaCreate
 
 
-class CRUDProfile(CRUDBase[Admin, AdminSchemaCreate]):
+class CRUDProfile(CRUDBase[Admin, AdminSchemaCreate, AdminSchemaCreate]):
     async def create_admin(
             self,
             db: AsyncSession,

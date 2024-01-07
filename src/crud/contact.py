@@ -1,4 +1,5 @@
-from sqlalchemy import select, delete
+from fastapi.encoders import jsonable_encoder
+from sqlalchemy import select, delete, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -7,7 +8,7 @@ from src.models.users import Contact
 from src.schemas.profile import ContactSchemaRead
 
 
-class CRUDProfile(CRUDBase[Contact, ContactSchemaRead]):
+class CRUDProfile(CRUDBase[Contact, ContactSchemaRead, ContactSchemaRead]):
     async def get_contact_by_profile(
             self,
             db: AsyncSession,
@@ -30,6 +31,39 @@ class CRUDProfile(CRUDBase[Contact, ContactSchemaRead]):
 
         await db.execute(query)
         await db.commit()
+
+    async def get_contacts(
+            self,
+            *,
+            db: AsyncSession,
+    ):
+        """Get contacts"""
+        query = select(self.model)
+
+        items = await db.execute(query)
+        return items.scalars().all()
+
+    async def update_contact(self, db: AsyncSession, *, new_data: ContactSchemaRead, contact_id: int):
+        """Update contact by id"""
+        new_data_dict = new_data.dict()
+        query = (update(self.model).where(self.model.id == contact_id).
+                 values(**new_data_dict))
+
+        await db.execute(query)
+        await db.commit()
+
+    async def create_contact(
+        self, db: AsyncSession, *, new_data: ContactSchemaRead
+    ):
+        """Create a new contact"""
+        obj_in_data = jsonable_encoder(new_data)
+        new_item = self.model(**obj_in_data)
+
+        db.add(new_item)
+        await db.commit()
+        await db.refresh(new_item)
+
+        return new_item
 
 
 contact_crud = CRUDProfile(Contact)

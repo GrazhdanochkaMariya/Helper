@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, status, HTTPException, Query
+from fastapi import APIRouter, Depends, status, HTTPException, Query, Body
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.api.auth import get_current_user
@@ -52,21 +52,37 @@ async def delete_contact(
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Contact id should be an integer")
 
 
-@router.patch(
+@router.post(
     "/update",
     responses=responses,
 )
 async def process_google_sheets_updates(
         # auth: auth_dependency,
-        data: ContactSchemaRead,
+        # data: ContactSchemaRead = Body(),
+        data: dict,
         db: AsyncSession = Depends(get_async_session),
 
 ):
     """Process updates from Google Sheets."""
-    contact = await contact_crud.get_contact_by_profile(db=db, profile_url=data.linkedin_profile)
 
+    # contact = await contact_crud.get_contact_by_profile(db=db, profile_url=data.linkedin_profile)
+    # if contact:
+    #     await contact_crud.update_contact(db=db, new_data=data, contact_id=contact.id)
+    #     return True
+    #
+    # else:
+    #     new_contact = await contact_crud.create_contact(db=db, new_data=data)
+    #     return new_contact
+    new_data = {
+        "lead_name": data["rowData"][0],
+        "linkedin_profile": data["rowData"][1],
+        "lead_company": data["rowData"][2],
+        "contact": data["rowData"][3],
+        "status": data["rowData"][4],
+    }
+    contact = await contact_crud.get_contact_by_profile(db=db, profile_url=new_data["linkedin_profile"])
     if contact:
-        await contact_crud.update_contact(db=db, new_data=data, contact_id=contact.id)
+        await contact_crud.update_contact(db=db, new_data=new_data, contact_id=contact.id)
         return True
 
     else:

@@ -10,6 +10,7 @@ click==8.1.7
 distlib==0.3.8
 ecdsa==0.18.0
 exceptiongroup==1.2.0
+Faker==22.1.0
 fastapi==0.108.0
 filelock==3.13.1
 google-auth==2.25.2
@@ -17,6 +18,8 @@ google-auth-oauthlib==1.2.0
 greenlet==3.0.3
 gspread==5.12.4
 h11==0.14.0
+httpcore==1.0.2
+httpx==0.26.0
 identify==2.5.33
 idna==3.6
 iniconfig==2.0.0

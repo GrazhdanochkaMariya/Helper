@@ -1,3 +1,4 @@
+import datetime
 from io import BytesIO
 from typing import Annotated
 
@@ -43,4 +44,6 @@ async def export_to_excel(
     df.to_excel(excel_file, index=False, sheet_name='Sheet1')
     excel_file.seek(0)
 
-    return StreamingResponse(excel_file, media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', headers={'Content-Disposition': 'attachment; filename=andersen_leads.xlsx'})
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    filename = f"{timestamp}"
+    return StreamingResponse(excel_file, media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', headers={'Content-Disposition': f'attachment; filename={filename}.xlsx'})

@@ -13,10 +13,10 @@ class CRUDProfile(CRUDBase[Contact, ContactSchemaRead, ContactSchemaRead]):
             self,
             db: AsyncSession,
             *,
-            profile_url: str
+            linkedin_profile: str
     ):
         """Get contact by LinkedIn url"""
-        query = select(self.model).where(self.model.linkedin_profile == profile_url)
+        query = select(self.model).where(self.model.linkedin_profile == linkedin_profile)
 
         item = await db.execute(query)
         return item.scalars().one_or_none()
@@ -45,7 +45,7 @@ class CRUDProfile(CRUDBase[Contact, ContactSchemaRead, ContactSchemaRead]):
 
     async def update_contact(self, db: AsyncSession, *, new_data: ContactSchemaRead, contact_id: int):
         """Update contact by id"""
-        new_data_dict = new_data.dict()
+        new_data_dict = new_data
         query = (update(self.model).where(self.model.id == contact_id).
                  values(**new_data_dict))
 

@@ -13,7 +13,7 @@ class ContactSchemaRead(BaseModel):
     status: TypeEnum
 
 
-class ContactSchemaReadFull(BaseModel):
+class ContactSchemaReadFull(ContactSchemaRead):
     """Schema for full profile"""
 
     id: int

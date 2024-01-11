@@ -22,12 +22,12 @@ auth_dependency = Annotated[dict, Depends(get_current_user)]
 )
 async def get_linkedin_profile(
         # auth: auth_dependency,
-        profile_url: str = Query(),
+        linkedin_profile: str = Query(),
         db: AsyncSession = Depends(get_async_session),
 
 ):
     """Get user`s LinkedIn profile"""
-    profile = await contact_crud.get_contact_by_profile(db=db, profile_url=profile_url)
+    profile = await contact_crud.get_contact_by_profile(db=db, linkedin_profile=linkedin_profile)
 
     if profile:
         return profile
@@ -59,7 +59,7 @@ async def delete_contact(
 async def process_google_sheets_updates(
         # auth: auth_dependency,
         # data: ContactSchemaRead = Body(),
-        data: dict,
+        data=Body(),
         db: AsyncSession = Depends(get_async_session),
 
 ):
@@ -80,11 +80,11 @@ async def process_google_sheets_updates(
         "contact": data["rowData"][3],
         "status": data["rowData"][4],
     }
-    contact = await contact_crud.get_contact_by_profile(db=db, profile_url=new_data["linkedin_profile"])
+    contact = await contact_crud.get_contact_by_profile(db=db, linkedin_profile=new_data["linkedin_profile"])
     if contact:
         await contact_crud.update_contact(db=db, new_data=new_data, contact_id=contact.id)
         return True
 
     else:
-        new_contact = await contact_crud.create_contact(db=db, new_data=data)
+        new_contact = await contact_crud.create_contact(db=db, new_data=new_data)
         return new_contact

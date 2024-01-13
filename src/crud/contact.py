@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 
 from src.crud.base import CRUDBase
-from src.models.users import Contact
+from src.models.users import Contact, TypeEnum
 from src.schemas.profile import ContactSchemaRead
 
 
@@ -56,6 +56,7 @@ class CRUDProfile(CRUDBase[Contact, ContactSchemaRead, ContactSchemaRead]):
         self, db: AsyncSession, *, new_data: ContactSchemaRead
     ):
         """Create a new contact"""
+
         obj_in_data = jsonable_encoder(new_data)
         new_item = self.model(**obj_in_data)
 
@@ -64,6 +65,18 @@ class CRUDProfile(CRUDBase[Contact, ContactSchemaRead, ContactSchemaRead]):
         await db.refresh(new_item)
 
         return new_item
+
+    async def update_contact_status(self, db: AsyncSession, new_status: TypeEnum, contact_id: int):
+        """Update contact status by id"""
+        query = (
+            update(self.model)
+            .where(self.model.id == contact_id)
+            .values(status=new_status)
+        )
+
+        await db.execute(query)
+        await db.commit()
+
 
 
 contact_crud = CRUDProfile(Contact)

@@ -1,5 +1,5 @@
+import datetime
 import os
-from datetime import timedelta, datetime
 from fastapi import status
 from jose import jwt
 
@@ -18,9 +18,8 @@ responses = {
 }
 
 
-def create_access_token(username: str, user_id: int, expires_delta: timedelta):
-    encode = {"sub": username, "id": user_id}
-    expires = datetime.utcnow() + expires_delta
-    encode.update({"exp": expires})
-    return jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM)
+def create_access_token(username: str):
+    expire = datetime.datetime.utcnow() + datetime.timedelta(minutes=30)
+    token = jwt.encode({"sub": username, "exp": expire}, SECRET_KEY, algorithm=ALGORITHM)
+    return token
 

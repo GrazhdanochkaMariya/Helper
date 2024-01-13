@@ -13,6 +13,8 @@ class TypeEnum(str, EnumType):
 
     CONTACT = "CONTACT"
     DNM = "DNM"
+    REQUEST = "REQUEST"
+    DECLINED = "DECLINED"
 
 
 class Contact(Base):
@@ -20,11 +22,10 @@ class Contact(Base):
 
     id = Column(Integer, primary_key=True, nullable=False)
     lead_name = Column(String, nullable=False)
-    lead_company = Column(String, nullable=True)
     linkedin_profile = Column(String, unique=True, nullable=False, index=True)
-    contact = Column(String, nullable=False)
     status = Column(ENUM(TypeEnum), default=TypeEnum.CONTACT)
     created_at = Column(DateTime, default=datetime.datetime.now)
+    next_contact = Column(DateTime)
 
 
 class Admin(Base):

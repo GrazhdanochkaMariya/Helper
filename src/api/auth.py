@@ -1,7 +1,7 @@
 from datetime import timedelta
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Cookie
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 from jose import jwt, JWTError
@@ -13,7 +13,6 @@ from src.utils import responses, create_access_token, SECRET_KEY, ALGORITHM
 router = APIRouter()
 
 db_dependency = Annotated[AsyncSession, Depends(get_async_session)]
-oauth2_bearer = OAuth2PasswordBearer(tokenUrl="auth/token")
 
 
 @router.post("/token")
@@ -33,12 +32,17 @@ async def login_for_access_token(
     return {"access_token": token, "token_type": "bearer"}
 
 
-async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
+async def get_current_user(token: str = Cookie(None)):
+    if token is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="No token provided",
+        )
+
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username = payload.get("sub")
-        user_id = payload.get("id")
-        if username is None or user_id is None:
+        if username is None:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid token",
@@ -50,6 +54,7 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
             detail="Invalid token",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
 
 @router.post("/", responses=responses)
 async def create_user(

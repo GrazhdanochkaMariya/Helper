@@ -23,7 +23,7 @@ auth_dependency = Annotated[dict, Depends(get_current_user)]
     responses=responses,
 )
 async def export_to_excel(
-        # auth: auth_dependency,
+        auth: auth_dependency,
         db: AsyncSession = Depends(get_async_session),
 ):
     contacts = await contact_crud.get_contacts(db=db)
@@ -45,5 +45,5 @@ async def export_to_excel(
     excel_file.seek(0)
 
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    filename = f"{timestamp}"
+    filename = f"export_file_{timestamp}"
     return StreamingResponse(excel_file, media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', headers={'Content-Disposition': f'attachment; filename={filename}.xlsx'})

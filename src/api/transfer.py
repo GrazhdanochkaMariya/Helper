@@ -31,10 +31,9 @@ async def export_to_excel(
         {
             "id": contact.id,
             "lead_name": contact.lead_name,
-            "lead_company": contact.lead_company,
             "linkedin_profile": contact.linkedin_profile,
-            "contact": contact.contact,
-            "status": contact.status.value
+            "next_contact": contact.next_contact,
+            "status": contact.status.split('.')[-1]
         }
         for contact in contacts
     ]

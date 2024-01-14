@@ -45,7 +45,7 @@ class CRUDProfile(CRUDBase[Contact, ContactSchemaRead, ContactSchemaRead]):
 
     async def update_contact(self, db: AsyncSession, *, new_data: ContactSchemaRead, contact_id: int):
         """Update contact by id"""
-        new_data_dict = new_data
+        new_data_dict = dict(new_data)
         query = (update(self.model).where(self.model.id == contact_id).
                  values(**new_data_dict))
 
@@ -57,7 +57,7 @@ class CRUDProfile(CRUDBase[Contact, ContactSchemaRead, ContactSchemaRead]):
     ):
         """Create a new contact"""
 
-        obj_in_data = jsonable_encoder(new_data)
+        obj_in_data = dict(new_data)
         new_item = self.model(**obj_in_data)
 
         db.add(new_item)

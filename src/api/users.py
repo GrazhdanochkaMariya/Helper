@@ -91,4 +91,4 @@ async def process_google_sheets_updates(
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found")
 
     else:
-        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Status ")
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Invalid data")

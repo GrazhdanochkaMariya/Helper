@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel, validator
 
@@ -8,7 +9,7 @@ class ContactSchemaRead(BaseModel):
 
     lead_name: str
     linkedin_profile: str
-    next_contact: datetime
+    next_contact: Optional[datetime]
     status: str
 
     @validator('next_contact', pre=True)

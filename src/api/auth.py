@@ -8,6 +8,7 @@ from jose import jwt, JWTError
 
 from src.crud.auth import admin_crud
 from src.db.session import get_async_session
+from src.session_storage import validate_session
 from src.utils import responses, create_access_token, SECRET_KEY, ALGORITHM
 
 router = APIRouter()
@@ -32,28 +33,41 @@ async def login_for_access_token(
     return {"access_token": token, "token_type": "bearer"}
 
 
-async def get_current_user(token: str = Cookie(None)):
-    if token is None:
+async def get_current_user(
+        token: str = Cookie(None,  include_in_schema=False),
+        session_id: str = Cookie(None,  include_in_schema=False)
+
+):
+
+    if token is None and session_id is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="No token provided",
+            detail="No token and session provided",
         )
-
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username = payload.get("sub")
-        if username is None:
+    if token is not None:
+        try:
+            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            username = payload.get("sub")
+            if username is None:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Invalid token",
+                )
+            return {"message": "You are authorized"}
+        except JWTError:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid token",
+                headers={"WWW-Authenticate": "Bearer"},
             )
+    result = await validate_session(session_id)
+    if result:
         return {"message": "You are authorized"}
-    except JWTError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid token",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Unauthorized",
+    )
 
 
 @router.post("/", responses=responses)

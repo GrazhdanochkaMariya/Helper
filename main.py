@@ -1,5 +1,6 @@
 import json
 import secrets
+import uuid
 
 from fastapi import Depends, FastAPI, HTTPException, Response
 from fastapi.openapi.docs import get_swagger_ui_html, get_redoc_html
@@ -10,6 +11,7 @@ from starlette import status
 from src.api.users import router as users_router
 from src.api.auth import router as admin_auth
 from src.api.transfer import router as transfer_router
+from src.session_storage import create_session
 from src.utils import create_access_token
 
 app = FastAPI(
@@ -42,7 +44,10 @@ def get_current_username(credentials: HTTPBasicCredentials = Depends(security)):
 async def get_swagger_documentation(username: str = Depends(get_current_username)):
     response = get_swagger_ui_html(openapi_url="/openapi.json", title="docs")
     token = create_access_token(username)
-    response.set_cookie(key="token", value=token, httponly=True, expires=1800)  # Set the token in a cookie
+    response.set_cookie(key="token", value=token, httponly=True, expires=1800)
+    session_id = str(uuid.uuid4())
+    await create_session(username=username, session_id=session_id)
+    response.set_cookie(key="session_id", value=session_id, httponly=True)
     return response
 
 
@@ -50,7 +55,10 @@ async def get_swagger_documentation(username: str = Depends(get_current_username
 async def get_redoc_documentation(username: str = Depends(get_current_username)):
     response = Response(content=get_redoc_html(openapi_url="/openapi.json", title="docs"))
     token = create_access_token(username)
-    response.set_cookie(key="token", value=token, httponly=True, expires=1800)  # Set the token in a cookie
+    response.set_cookie(key="token", value=token, httponly=True, expires=1800)
+    session_id = str(uuid.uuid4())
+    await create_session(username=username, session_id=session_id)
+    response.set_cookie(key="session_id", value=session_id, httponly=True)
     return response
 
 

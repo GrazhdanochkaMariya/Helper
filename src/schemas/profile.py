@@ -18,6 +18,7 @@ class ContactSchemaRead(BaseModel):
             return datetime.strptime(v, '%d.%m.%Y')
         return v
 
+    @validator('status', pre=True)
     def convert_status_to_upper(cls, v):
         """Validator to convert status to uppercase"""
         return v.upper()

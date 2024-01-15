@@ -7,13 +7,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from jose import jwt, JWTError
 
 from src.crud.auth import admin_crud
-from src.db.session import get_async_session
+from src.db.db import get_db
 from src.session_storage import validate_session
 from src.utils import responses, create_access_token, SECRET_KEY, ALGORITHM
 
 router = APIRouter()
 
-db_dependency = Annotated[AsyncSession, Depends(get_async_session)]
+db_dependency = Annotated[AsyncSession, Depends(get_db)]
 
 
 @router.post("/token")

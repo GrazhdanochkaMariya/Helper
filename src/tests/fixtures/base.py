@@ -1,6 +1,7 @@
 """Module contains base fixtures for tests"""
 import asyncio
 from typing import AsyncGenerator
+
 import pytest_asyncio
 from httpx import AsyncClient
 
@@ -10,12 +11,14 @@ from sqlalchemy.pool import NullPool
 
 from config import DB_USER, DB_PASS, TEST_DB_HOST, TEST_DB_PORT, TEST_DB_NAME
 from main import app
-from src.db.session import get_async_session, Base
+from src.db.db import get_db
+from src.db.session import Base
 
-TEST_DATABASE_URL = f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@{TEST_DB_HOST}:{TEST_DB_PORT}/{TEST_DB_NAME}"
-engine = create_async_engine(TEST_DATABASE_URL, poolclass=NullPool)
+DATABASE_URL_TEST = f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@{TEST_DB_HOST}:{TEST_DB_PORT}/{TEST_DB_NAME}"
+
+engine = create_async_engine(DATABASE_URL_TEST, poolclass=NullPool)
 async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
-Base.metadata.bind = TEST_DATABASE_URL
+Base.metadata.bind = DATABASE_URL_TEST
 
 
 async def override_get_async_session() -> AsyncGenerator:
@@ -24,7 +27,7 @@ async def override_get_async_session() -> AsyncGenerator:
         yield session
 
 
-app.dependency_overrides[get_async_session] = override_get_async_session
+app.dependency_overrides[get_db] = override_get_async_session
 
 
 @pytest_asyncio.fixture(autouse=True, scope="function")

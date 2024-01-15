@@ -1,3 +1,5 @@
+import datetime
+
 import pytest_asyncio
 from faker import Faker
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -11,12 +13,12 @@ async def get_name() -> str:
 
     return faker.name()
 
+
 async def get_contact_data() -> dict:
     return {
-        "lead_name": get_name(),
-        "lead_company": get_name(),
-        "linkedin_profile": get_name(),
-        "contact": get_name(),
+        "lead_name": await get_name(),
+        "linkedin_profile": await get_name(),
+        "next_contact": datetime.datetime.now(),
         "status": TypeEnum.CONTACT,
     }
 
@@ -33,4 +35,4 @@ async def add_contacts_to_db(prepare_database: AsyncSession) -> tuple:
     prepare_database.add(contact_2)
     await prepare_database.commit()
 
-    return contact_data_1, contact_data_2
+    return contact_1, contact_2

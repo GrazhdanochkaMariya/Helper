@@ -11,6 +11,7 @@ from starlette import status
 from src.api.users import router as users_router
 from src.api.auth import router as admin_auth
 from src.api.transfer import router as transfer_router
+from src.db.session import get_or_create_engine, dispose_engine
 from src.session_storage import create_session
 from src.utils import create_access_token
 
@@ -24,6 +25,19 @@ app = FastAPI(
 app.include_router(users_router, prefix="/api", tags=["Contacts"])
 app.include_router(admin_auth, prefix="/api/auth", tags=["Auth"])
 app.include_router(transfer_router, prefix="/api", tags=["Transfer"])
+
+
+@app.on_event("startup")
+async def startup():
+    """Starts engine on apps run"""
+    get_or_create_engine()
+
+
+@app.on_event("shutdown")
+async def shutdown():
+    """Stops engine on apps stop"""
+    await dispose_engine()
+
 
 security = HTTPBasic()
 

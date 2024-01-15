@@ -9,12 +9,12 @@ from starlette.responses import StreamingResponse
 
 from src.api.auth import get_current_user
 from src.crud.contact import contact_crud
-from src.db.session import get_async_session
+from src.db.db import get_db
 from src.utils import responses
 
 router = APIRouter()
 
-db_dependency = Annotated[AsyncSession, Depends(get_async_session)]
+db_dependency = Annotated[AsyncSession, Depends(get_db)]
 auth_dependency = Annotated[dict, Depends(get_current_user)]
 
 
@@ -23,8 +23,8 @@ auth_dependency = Annotated[dict, Depends(get_current_user)]
     responses=responses,
 )
 async def export_to_excel(
+        db: db_dependency,
         auth: auth_dependency,
-        db: AsyncSession = Depends(get_async_session),
 ):
     contacts = await contact_crud.get_contacts(db=db)
     data = [

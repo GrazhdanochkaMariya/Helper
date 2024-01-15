@@ -5,14 +5,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.api.auth import get_current_user
 from src.crud.contact import contact_crud
-from src.db.session import get_async_session
+from src.db.db import get_db
 from src.models.users import TypeEnum
 from src.schemas.profile import ContactSchemaRead, ContactSchemaReadFull
 from src.utils import responses
 
 router = APIRouter()
 
-db_dependency = Annotated[AsyncSession, Depends(get_async_session)]
+db_dependency = Annotated[AsyncSession, Depends(get_db)]
 auth_dependency = Annotated[dict, Depends(get_current_user)]
 
 
@@ -22,10 +22,9 @@ auth_dependency = Annotated[dict, Depends(get_current_user)]
     responses=responses,
 )
 async def get_linkedin_profile(
+        db: db_dependency,
         auth: auth_dependency,
         linkedin_profile: str = Query(),
-        db: AsyncSession = Depends(get_async_session),
-
 ):
     """Get user`s LinkedIn profile"""
     profile = await contact_crud.get_contact_by_profile(db=db, linkedin_profile=linkedin_profile)
@@ -41,9 +40,9 @@ async def get_linkedin_profile(
     responses=responses,
 )
 async def delete_contact(
+        db: db_dependency,
         auth: auth_dependency,
         contact_id: int = Query(),
-        db: AsyncSession = Depends(get_async_session),
 ):
     """Delete contact from DB"""
     try:
@@ -58,9 +57,9 @@ async def delete_contact(
     responses=responses,
 )
 async def process_google_sheets_updates(
+        db: db_dependency,
         auth: auth_dependency,
         data: ContactSchemaRead,
-        db: AsyncSession = Depends(get_async_session),
 
 ):
     """Process updates from Google Sheets."""

@@ -3,18 +3,20 @@ import asyncio
 from typing import AsyncGenerator
 
 import pytest_asyncio
+from fastapi import HTTPException
 from httpx import AsyncClient
-
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool
 
-from config import DB_USER, DB_PASS, TEST_DB_HOST, TEST_DB_PORT, TEST_DB_NAME
+from config import DB_PASS, DB_USER, TEST_DB_HOST, TEST_DB_NAME, TEST_DB_PORT
 from main import app
+from src.api.auth import get_current_user
 from src.db.db import get_db
 from src.db.session import Base
 
-DATABASE_URL_TEST = f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@{TEST_DB_HOST}:{TEST_DB_PORT}/{TEST_DB_NAME}"
+DATABASE_URL_TEST = \
+    f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@{TEST_DB_HOST}:{TEST_DB_PORT}/{TEST_DB_NAME}"
 
 engine = create_async_engine(DATABASE_URL_TEST, poolclass=NullPool)
 async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
@@ -27,7 +29,21 @@ async def override_get_async_session() -> AsyncGenerator:
         yield session
 
 
+async def override_get_current_user(token: str = None, session_id: str = None):
+    """Returns current user"""
+
+    if token == "valid_token":
+        return {"message": "You are authorized"}
+    elif session_id == "valid_session_id":
+        return {"message": "You are authorized"}
+    else:
+        raise HTTPException(
+            status_code=401,
+            detail="Unauthorized",
+        )
+
 app.dependency_overrides[get_db] = override_get_async_session
+app.dependency_overrides[get_current_user] = override_get_async_session
 
 
 @pytest_asyncio.fixture(autouse=True, scope="function")

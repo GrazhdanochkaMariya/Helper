@@ -1,7 +1,5 @@
-from fastapi.encoders import jsonable_encoder
-from sqlalchemy import select, delete, update
+from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
-
 
 from src.crud.base import CRUDBase
 from src.models.users import Contact, TypeEnum
@@ -16,18 +14,22 @@ class CRUDProfile(CRUDBase[Contact, ContactSchemaRead, ContactSchemaRead]):
             linkedin_profile: str
     ):
         """Get contact by LinkedIn url"""
-        query = select(self.model).where(self.model.linkedin_profile == linkedin_profile)
+        query = (
+            select(self.model)
+            .where(self.model.linkedin_profile == linkedin_profile)
+        )
 
         item = await db.execute(query)
         return item.scalars().one_or_none()
 
-    async def delete_contact_by_id(
+    async def delete_contact_by_profile(
             self,
             db: AsyncSession,
             *,
-            contact_id: int
+            linkedin_profile: str
     ):
-        query = delete(self.model).where(self.model.id == contact_id)
+        query = (delete(self.model)
+                 .where(self.model.linkedin_profile == linkedin_profile))
 
         await db.execute(query)
         await db.commit()
@@ -43,7 +45,13 @@ class CRUDProfile(CRUDBase[Contact, ContactSchemaRead, ContactSchemaRead]):
         items = await db.execute(query)
         return items.scalars().all()
 
-    async def update_contact(self, db: AsyncSession, *, new_data: ContactSchemaRead, contact_id: int):
+    async def update_contact(
+            self,
+            db: AsyncSession,
+            *,
+            new_data: ContactSchemaRead,
+            contact_id: int
+    ):
         """Update contact by id"""
         new_data_dict = dict(new_data)
         query = (update(self.model).where(self.model.id == contact_id).
@@ -66,7 +74,12 @@ class CRUDProfile(CRUDBase[Contact, ContactSchemaRead, ContactSchemaRead]):
 
         return new_item
 
-    async def update_contact_status(self, db: AsyncSession, new_status: TypeEnum, contact_id: int):
+    async def update_contact_status(
+            self,
+            db: AsyncSession,
+            new_status: TypeEnum,
+            contact_id: int
+    ):
         """Update contact status by id"""
         query = (
             update(self.model)

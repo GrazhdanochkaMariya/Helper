@@ -1,9 +1,12 @@
 import datetime
 import os
+
 from fastapi import status
 from jose import jwt
 
 from src.schemas.base import MessageResponse
+
+CONTACT_NOT_FOUND_MESSAGE = "Contact not found"
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
@@ -20,6 +23,8 @@ responses = {
 
 def create_access_token(username: str):
     expire = datetime.datetime.utcnow() + datetime.timedelta(minutes=30)
-    token = jwt.encode({"sub": username, "exp": expire}, SECRET_KEY, algorithm=ALGORITHM)
+    token = jwt.encode(
+        {"sub": username, "exp": expire},
+        SECRET_KEY, algorithm=ALGORITHM
+    )
     return token
-

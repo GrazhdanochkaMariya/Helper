@@ -1,0 +1,38 @@
+version: "3.9"
+services:
+  app:
+    container_name: leadhelper_application
+    build:
+      context: .
+      dockerfile: Dockerfile.local
+    ports:
+      - "8000:80"
+    volumes:
+      - .:/leadhelper_app
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+    networks:
+      - andersen_leadhelper
+
+
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - andersen_leadhelper
+
+networks:
+  andersen_leadhelper:
+    driver: bridge
+
+volumes:
+  postgres_data:

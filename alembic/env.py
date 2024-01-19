@@ -1,14 +1,12 @@
 import asyncio
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config, create_engine, Connection
-from sqlalchemy import pool
-
-from alembic import context
+from sqlalchemy import create_engine
+from sqlalchemy.engine.base import Connection
 from sqlalchemy.ext.asyncio import AsyncEngine
 
-from config import DB_HOST, DB_PORT, DB_USER, DB_NAME, DB_PASS
-
+from alembic import context
+from config import DB_HOST, DB_NAME, DB_PASS, DB_PORT, DB_USER
 from src.models.users import Base
 
 # this is the Alembic Config object, which provides
@@ -68,7 +66,11 @@ def run_migrations_offline() -> None:
 
 
 def do_run_migrations(connection: Connection) -> None:
-    context.configure(connection=connection, target_metadata=target_metadata, compare_type=True)
+    context.configure(
+        connection=connection,
+        target_metadata=target_metadata,
+        compare_type=True
+    )
 
     with context.begin_transaction():
         context.run_migrations()

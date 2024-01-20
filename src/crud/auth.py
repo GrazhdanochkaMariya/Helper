@@ -1,6 +1,5 @@
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
-
 
 from src.crud.base import CRUDBase
 from src.models.users import Admin
@@ -54,6 +53,19 @@ class CRUDProfile(CRUDBase[Admin, AdminSchemaCreate, AdminSchemaCreate]):
 
         item = await db.execute(query)
         return item.scalars().one_or_none()
+
+    async def update_admin_token(
+            self,
+            db: AsyncSession,
+            *,
+            admin_id: int,
+            new_token: str
+    ):
+        """Update admin token by admin id"""
+        query = update(Admin).where(Admin.id == admin_id).values(token=new_token)
+
+        await db.execute(query)
+        await db.commit()
 
 
 admin_crud = CRUDProfile(Admin)

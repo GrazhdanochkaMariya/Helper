@@ -80,7 +80,7 @@ async def test_create_contact(prepare_database: AsyncGenerator):
     new_contact_data = {
         "lead_name": "New Contact",
         "linkedin_profile": "linkedin/profile",
-        "next_contact": datetime.datetime.now(),
+        "next_contact": f"{datetime.datetime.now()}",
         "status": TypeEnum.CONTACT
     }
     new_contact = await contact_crud.create_contact(

@@ -1,8 +1,8 @@
-import datetime
 import os
+from datetime import datetime, timedelta
 
 from fastapi import status
-from jose import jwt
+from jose import JWTError, jwt
 
 from src.schemas.base import MessageResponse
 
@@ -22,9 +22,19 @@ responses = {
 
 
 def create_access_token(username: str):
-    expire = datetime.datetime.utcnow() + datetime.timedelta(minutes=30)
+    expire = datetime.utcnow() + timedelta(days=365)
     token = jwt.encode(
         {"sub": username, "exp": expire},
         SECRET_KEY, algorithm=ALGORITHM
     )
     return token
+
+
+def is_token_expired(token: str) -> bool:
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        expiration_time = datetime.utcfromtimestamp(payload["exp"])
+        current_time = datetime.utcnow()
+        return current_time > expiration_time
+    except JWTError:
+        return True

@@ -4,7 +4,7 @@ import pytest_asyncio
 from faker import Faker
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.models.users import TypeEnum, Contact
+from src.models.users import Contact, TypeEnum
 
 
 async def get_name() -> str:
@@ -18,7 +18,7 @@ async def get_contact_data() -> dict:
     return {
         "lead_name": await get_name(),
         "linkedin_profile": await get_name(),
-        "next_contact": datetime.datetime.now(),
+        "next_contact": f"{datetime.datetime.now()}",
         "status": TypeEnum.CONTACT,
     }
 

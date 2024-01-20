@@ -1,8 +1,7 @@
 import datetime
 from enum import Enum as EnumType
 
-
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, DateTime, Integer, String
 from sqlalchemy.dialects.postgresql import ENUM
 
 from src.db.session import Base
@@ -25,7 +24,7 @@ class Contact(Base):
     linkedin_profile = Column(String, unique=True, nullable=False, index=True)
     status = Column(ENUM(TypeEnum), default=TypeEnum.CONTACT)
     created_at = Column(DateTime, default=datetime.datetime.now)
-    next_contact = Column(DateTime)
+    next_contact = Column(String)
 
 
 class Admin(Base):
@@ -35,4 +34,4 @@ class Admin(Base):
     username = Column(String, unique=True)
     password = Column(String, nullable=False)
     last_login = Column(DateTime, default=datetime.datetime.now)
-
+    token = Column(String, nullable=True)

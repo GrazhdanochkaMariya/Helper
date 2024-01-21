@@ -2,9 +2,9 @@ import datetime
 from io import BytesIO
 from typing import Annotated
 
+import pandas as pd
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-import pandas as pd
 from starlette.responses import StreamingResponse
 
 from src.api.auth import get_current_user
@@ -26,6 +26,7 @@ async def export_to_excel(
         db: db_dependency,
         auth: auth_dependency,
 ):
+    """Export contacts to an Excel file"""
     contacts = await contact_crud.get_contacts(db=db)
     data = [
         {
@@ -45,4 +46,8 @@ async def export_to_excel(
 
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     filename = f"export_file_{timestamp}"
-    return StreamingResponse(excel_file, media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', headers={'Content-Disposition': f'attachment; filename={filename}.xlsx'})
+    return StreamingResponse(
+        excel_file,
+        media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        headers={'Content-Disposition': f'attachment; filename={filename}.xlsx'}
+    )

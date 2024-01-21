@@ -91,5 +91,4 @@ class CRUDProfile(CRUDBase[Contact, ContactSchemaRead, ContactSchemaRead]):
         await db.commit()
 
 
-
 contact_crud = CRUDProfile(Contact)

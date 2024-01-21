@@ -26,7 +26,7 @@ async def get_contact(
         auth: auth_dependency,
         linkedin_profile: str = Query(),
 ):
-    """Get user`s LinkedIn profile"""
+    """Get user by LinkedIn profile"""
     contact = await contact_crud.get_contact_by_profile(
         db=db,
         linkedin_profile=linkedin_profile
@@ -77,7 +77,7 @@ async def process_google_sheets_updates(
         data: ContactSchemaRead,
 
 ):
-    """Process updates from Google Sheets."""
+    """Process updates from Google Sheets"""
 
     contact = await contact_crud.get_contact_by_profile(
         db=db,

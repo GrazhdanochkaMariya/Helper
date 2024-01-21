@@ -51,6 +51,7 @@ async def get_current_username(
         db: db_dependency,
         credentials: HTTPBasicCredentials = Depends(security),
 ):
+    """Authenticate user and get current username"""
     correct_username = secrets.compare_digest(credentials.username, "AndersenLeads")
     correct_password = secrets.compare_digest(credentials.password, "eVxuw88jWpajhyJI")
     if not (correct_username and correct_password):
@@ -95,6 +96,7 @@ async def get_current_username(
 
 @app.get("/docs", include_in_schema=False)
 async def get_swagger_documentation(auth_data=Depends(get_current_username)):
+    """Get Swagger documentation"""
     response = get_swagger_ui_html(openapi_url="/openapi.json", title="docs")
     session_id = str(uuid.uuid4())
     await create_session(username=auth_data[0], session_id=session_id)
@@ -105,9 +107,8 @@ async def get_swagger_documentation(auth_data=Depends(get_current_username)):
 
 @app.get("/redoc", include_in_schema=False)
 async def get_redoc_documentation(auth_data=Depends(get_current_username)):
-    response = Response(content=get_redoc_html
-    (openapi_url="/openapi.json", title="docs")
-                        )
+    """Get ReDoc documentation"""
+    response = get_redoc_html(openapi_url="/openapi.json", title="docs")
     session_id = str(uuid.uuid4())
     await create_session(username=auth_data[0], session_id=session_id)
     response.set_cookie(key="session_id", value=session_id, httponly=True)
@@ -117,6 +118,7 @@ async def get_redoc_documentation(auth_data=Depends(get_current_username)):
 
 @app.get("/openapi.json", include_in_schema=False)
 async def openapi(username: str = Depends(get_current_username)):
+    """Get OpenAPI documentation"""
     openapi_spec = get_openapi(title=app.title, version=app.version, routes=app.routes)
     response = Response(content=json.dumps(openapi_spec))
     response.headers["Content-Type"] = "application/json"

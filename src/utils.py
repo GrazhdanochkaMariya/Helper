@@ -22,6 +22,7 @@ responses = {
 
 
 def create_access_token(username: str):
+    """Create an access token for the given username"""
     expire = datetime.utcnow() + timedelta(days=365)
     token = jwt.encode(
         {"sub": username, "exp": expire},
@@ -31,6 +32,7 @@ def create_access_token(username: str):
 
 
 def is_token_expired(token: str) -> bool:
+    """Check if the given JWT token is expired"""
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         expiration_time = datetime.utcfromtimestamp(payload["exp"])

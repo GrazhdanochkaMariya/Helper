@@ -8,32 +8,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.crud.auth import admin_crud
 from src.db.db import get_db
 from src.session_storage import validate_session
-from src.utils import ALGORITHM, SECRET_KEY, create_access_token, responses
+from src.utils import (ALGORITHM, SECRET_KEY, create_access_token,
+                       is_token_expired)
 
 router = APIRouter()
 
 db_dependency = Annotated[AsyncSession, Depends(get_db)]
-
-
-@router.post("/token")
-async def login_for_access_token(
-        db: db_dependency,
-        form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-):
-    user = await admin_crud.get_admin(
-        username=form_data.username,
-        password=form_data.password,
-        db=db
-    )
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
-    token = create_access_token(user.username)
-    return {"access_token": token, "token_type": "bearer"}
 
 
 async def get_current_user(
@@ -41,7 +21,7 @@ async def get_current_user(
         session_id: str = Cookie(None,  include_in_schema=False),
         user_token: str = Cookie(None, include_in_schema=False)
 ):
-
+    """Get the current user from the authentication token or session"""
     if authorization and authorization.startswith("Bearer "):
         token = authorization.split(" ")[1]
     else:
@@ -56,14 +36,32 @@ async def get_current_user(
         try:
             if token:
                 payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+                username = payload.get("sub")
+                if username is None:
+                    raise HTTPException(
+                        status_code=status.HTTP_401_UNAUTHORIZED,
+                        detail="Invalid token",
+                    )
+                if is_token_expired(token):
+                    raise HTTPException(
+                        status_code=status.HTTP_401_UNAUTHORIZED,
+                        detail="Token has expired",
+                        headers={"WWW-Authenticate": "Bearer"},
+                    )
             else:
                 payload = jwt.decode(user_token, SECRET_KEY, algorithms=[ALGORITHM])
-            username = payload.get("sub")
-            if username is None:
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Invalid token",
-                )
+                username = payload.get("sub")
+                if username is None:
+                    raise HTTPException(
+                        status_code=status.HTTP_401_UNAUTHORIZED,
+                        detail="Invalid token",
+                    )
+                if is_token_expired(user_token):
+                    raise HTTPException(
+                        status_code=status.HTTP_401_UNAUTHORIZED,
+                        detail="Token has expired",
+                        headers={"WWW-Authenticate": "Bearer"},
+                    )
             return {"message": "You are authorized"}
         except JWTError:
             raise HTTPException(
@@ -80,24 +78,55 @@ async def get_current_user(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Unauthorized",
     )
+auth_dependency = Annotated[dict, Depends(get_current_user)]
 
 
-@router.post("/", responses=responses)
-async def create_user(
+@router.post("/token")
+async def login_for_access_token(
+        auth: auth_dependency,
         db: db_dependency,
-        username: str,
-        password: str
+        form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
 ):
-    data = {
-        "username": username,
-        "password": password
-    }
-    check_name = await admin_crud.check_admin_name(db=db, username=username)
-    if check_name:
+    """Get an access token for user authentication"""
+    admin = await admin_crud.get_admin(
+        username=form_data.username,
+        password=form_data.password,
+        db=db
+    )
+    if not admin:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Username already registered in db"
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
         )
 
-    user = await admin_crud.create_admin(db=db, data=data)
-    return user
+    token = create_access_token(admin.username)
+    await admin_crud.update_admin_token(
+        db=db,
+        admin_id=admin.id,
+        new_token=token
+    )
+    return {"access_token": token, "token_type": "bearer"}
+
+
+# This endpoint is for future functionality
+
+# @router.post("/", responses=responses)
+# async def create_user(
+#         db: db_dependency,
+#         username: str,
+#         password: str
+# ):
+#     data = {
+#         "username": username,
+#         "password": password
+#     }
+#     check_name = await admin_crud.check_admin_name(db=db, username=username)
+#     if check_name:
+#         raise HTTPException(
+#             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+#             detail="Username already registered in db"
+#         )
+#
+#     user = await admin_crud.create_admin(db=db, data=data)
+#     return user

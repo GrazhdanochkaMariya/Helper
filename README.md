@@ -1,42 +1,30 @@
-1. Clone with git
+# Marketing Lead Helper Tool
 
-git clone https://github.com/GrazhdanochkaMariya/Helper.git
+#TODO Describe project
 
+## Technologies
+- Python 3.11
+- FastAPI==0.109.0
+- Postgres 14.6
+- Uvicorn
+- Docker
 
-2. Create virtual environment
-   
-python3 -m venv venv
+## Setup
+Please, follow steps to prepare project for local development:
+1. Clone repository.
+2. Setup venv with Python 3.11.
+3. Install dependencies from requirements.txt file.
+4. Create `.env` file from `.env.example`.
+5. Setup database: `docker compose up -d`
+6. Initialise basic data: `python src/scripts/init_db.py`
+7. Install pre-commit hooks: `pre-commit install`
+8. Run `uvicorn src.main:app --reload`
 
-source venv/bin/activate  # for Linux/Mac
+## Migrate database
+1. Initialize migrations: `alembic revision --autogenerate -m "init"`
+2. Make migrations: `alembic revision -m "<MSG>"`
+3. Run migrations: `alembic upgrade head`
 
-.\venv\Scripts\activate  # for Windows
-
-3. Create env file 
-
-Use the template .env.example
-
-4. Install pre-commit
-
-pre-commit install
-
-pre-commit run
-
-5. Create test database
-
-6. Run docker-compose
-
-docker-compose -f docker-compose.local.yml up
-
-7. To use Swagger locally follow
-
-http://127.0.0.1:8000/docs
-
-with your creds
-
-Username: AndersenLeads
-
-Password: eVxuw88jWpajhyJI
-
-8. Stop docker-compose
-
-docker-compose -f docker-compose.local.yml down
+## APIs
+1. Swagger: `http://127.0.0.1:8000/docs`
+2. TODO

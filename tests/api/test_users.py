@@ -2,7 +2,7 @@ import pytest
 from httpx import AsyncClient
 from starlette import status
 
-from src.old.utils import CONTACT_NOT_FOUND_MESSAGE
+from src.utils import CONTACT_NOT_FOUND_MESSAGE
 from tests.fixtures.contacts import get_name
 
 

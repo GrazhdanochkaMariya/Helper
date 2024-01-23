@@ -63,7 +63,7 @@ app_configs: dict[str, Any] = {
     "title": settings.app_name,
     "summary": settings.app_summary,
     "description": settings.app_description,
-    # "docs_url": None,
-    # "redoc_url": None,
-    # "openapi_url": None,
+    "docs_url": None,
+    "redoc_url": None,
+    "openapi_url": None,
 }

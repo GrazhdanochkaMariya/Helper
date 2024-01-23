@@ -4,10 +4,17 @@ from typing import Union
 from jose import jwt
 from passlib.context import CryptContext
 from pydantic import EmailStr
+from fastapi import Depends, HTTPException
+from fastapi.security import HTTPBasicCredentials, HTTPBasic
+from starlette import status
+from starlette.requests import Request
 
 from src.auth.dao import UserDAO
 from src.config import settings
 from src.models import User
+
+
+security = HTTPBasic()
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -36,7 +43,36 @@ def create_access_token(
     return encoded_jwt
 
 
+def create_access_token_for_headers(
+    data: dict
+) -> str:
+    to_encode = data.copy()
+    expire = datetime.utcnow() + timedelta(days=365)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(
+        to_encode, key=settings.SECRET_KEY, algorithm=settings.ALGORITHM
+    )
+    return encoded_jwt
+
+
 async def authenticate_user(email: EmailStr, password: str) -> User:
     user = await UserDAO.select_one_or_none_filter_by(email=email)
     if user and verify_password(password, user.hashed_password):
         return user
+
+
+async def swagger_login(
+        request: Request,
+        credentials: HTTPBasicCredentials = Depends(security),
+):
+    """Authenticate user and get token"""
+    user = await authenticate_user(str(credentials.username), str(credentials.password))
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+
+    access_token = create_access_token({"sub": str(user.id)})
+    request.session.update({"token": access_token})

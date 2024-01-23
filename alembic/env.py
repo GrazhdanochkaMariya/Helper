@@ -6,19 +6,12 @@ from sqlalchemy.engine.base import Connection
 from sqlalchemy.ext.asyncio import AsyncEngine
 
 from alembic import context
-from config import DB_HOST, DB_NAME, DB_PASS, DB_PORT, DB_USER
-from src.models.users import Base
+from src.config import settings
+from src.database import Base
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
-
-section = config.config_ini_section
-config.set_section_option(section, "DB_HOST", DB_HOST)
-config.set_section_option(section, "DB_PORT", DB_PORT)
-config.set_section_option(section, "DB_USER", DB_USER)
-config.set_section_option(section, "DB_NAME", DB_NAME)
-config.set_section_option(section, "DB_PASS", DB_PASS)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
@@ -26,7 +19,7 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 # DB URL set up
-DB_URL = f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+DB_URL = settings.get_async_database_url()
 config.set_main_option("sqlalchemy.url", DB_URL)
 # add your model's MetaData object here
 # for 'autogenerate' support
@@ -58,7 +51,7 @@ def run_migrations_offline() -> None:
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
-        compare_type=True
+        compare_type=True,
     )
 
     with context.begin_transaction():
@@ -67,9 +60,7 @@ def run_migrations_offline() -> None:
 
 def do_run_migrations(connection: Connection) -> None:
     context.configure(
-        connection=connection,
-        target_metadata=target_metadata,
-        compare_type=True
+        connection=connection, target_metadata=target_metadata, compare_type=True
     )
 
     with context.begin_transaction():

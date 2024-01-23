@@ -16,9 +16,10 @@ Please, follow steps to prepare project for local development:
 3. Install dependencies from requirements.txt file.
 4. Create `.env` file from `.env.example`.
 5. Setup database: `docker compose up -d`
-6. Initialise basic data: `python src/scripts/init_db.py`
-7. Install pre-commit hooks: `pre-commit install`
-8. Run `uvicorn src.main:app --reload`
+6. Run migrations: `alembic upgrade head`
+7. Initialise basic data: `python -m src.scripts.init_db`
+8. Install pre-commit hooks: `pre-commit install`
+9. Run `uvicorn src.main:app --reload`
 
 ## Migrate database
 1. Initialize migrations: `alembic revision --autogenerate -m "init"`

@@ -9,7 +9,7 @@ from src.auth.dependencies import get_current_user
 from src.config import settings
 
 
-class AdminAuth(AuthenticationBackend):
+class SessionAuth(AuthenticationBackend):
     async def login(self, request: Request) -> bool:
         form = await request.form()
         email, password = form["username"], form["password"]
@@ -35,4 +35,4 @@ class AdminAuth(AuthenticationBackend):
             return RedirectResponse(request.url_for("admin:login"), status_code=302)
 
 
-authentication_backend = AdminAuth(secret_key=settings.SECRET_KEY)
+authentication_backend = SessionAuth(secret_key=settings.SECRET_KEY)

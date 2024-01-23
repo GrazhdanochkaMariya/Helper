@@ -32,7 +32,6 @@ class LeadContact(Base):
 
     id = Column(Integer, primary_key=True, nullable=False)
     lead_name = Column(String, nullable=False)
-    # where is company ???
     linkedin_profile = Column(String, unique=True, nullable=False, index=True)
     status = Column(ENUM(TypeEnum), default=TypeEnum.CONTACT)
     next_contact = Column(String)

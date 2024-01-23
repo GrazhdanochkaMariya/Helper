@@ -36,6 +36,18 @@ def create_access_token(
     return encoded_jwt
 
 
+def create_access_token_for_headers(
+    data: dict
+) -> str:
+    to_encode = data.copy()
+    expire = datetime.utcnow() + timedelta(days=365)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(
+        to_encode, key=settings.SECRET_KEY, algorithm=settings.ALGORITHM
+    )
+    return encoded_jwt
+
+
 async def authenticate_user(email: EmailStr, password: str) -> User:
     user = await UserDAO.select_one_or_none_filter_by(email=email)
     if user and verify_password(password, user.hashed_password):

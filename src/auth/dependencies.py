@@ -11,7 +11,7 @@ from src.models import User
 
 
 def get_token(request: Request):
-    token = request.headers.get("authentication")
+    token = request.headers.get("authorization")
     if not token:
         raise TokenAbsentException()
     return token
@@ -19,6 +19,8 @@ def get_token(request: Request):
 
 async def get_current_user(token: str = Depends(get_token)) -> User:
     try:
+        if token.startswith("Bearer "):
+            token = token.split(" ")[1]
         payload = jwt.decode(token, settings.SECRET_KEY, settings.ALGORITHM)
     except JWTError:
         raise IncorrectTokenException()

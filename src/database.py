@@ -1,7 +1,7 @@
 from typing import AsyncGenerator
 
-from sqlalchemy import create_engine
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy import create_engine, exc
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
 from src.config import settings
@@ -15,13 +15,18 @@ SYNC_DATABASE_PARAMS = {}
 
 
 engine = create_async_engine(DATABASE_URL, **DATABASE_PARAMS)
-async_session_maker = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+async_session_maker = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 
-async def async_session() -> AsyncGenerator:
-    """Returns session"""
+async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
     async with async_session_maker() as session:
-        yield session
+        try:
+            yield session
+            await session.commit()
+        except exc.SQLAlchemyError as e:
+            await session.rollback()
+            raise e
+
 
 # Used only to initialize DB!!!
 sync_session_maker = None

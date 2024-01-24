@@ -6,11 +6,13 @@ from passlib.context import CryptContext
 from pydantic import EmailStr
 from fastapi import Depends, HTTPException
 from fastapi.security import HTTPBasicCredentials, HTTPBasic
+from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 from starlette.requests import Request
 
-from src.auth.dao import UserDAO
 from src.config import settings
+from src.dao.user_dao import UserDAO
+from src.database import get_db_session
 from src.models import User
 
 
@@ -55,8 +57,12 @@ def create_access_token_for_headers(
     return encoded_jwt
 
 
-async def authenticate_user(email: EmailStr, password: str) -> User:
-    user = await UserDAO.select_one_or_none_filter_by(email=email)
+async def authenticate_user(
+        email: EmailStr,
+        password: str,
+        session: AsyncSession = Depends(get_db_session),
+) -> User:
+    user = await UserDAO(session).select_one_or_none_filter_by(email=email)
     if user and verify_password(password, user.hashed_password):
         return user
 

@@ -31,10 +31,6 @@ class Settings(BaseSettings):
     DATABASE_HOST: str
     DATABASE_PORT: str
 
-    TEST_DATABASE_NAME: str
-    TEST_DATABASE_HOSTNAME: str
-    TEST_DB_PORT: str
-
     # CORS
     CORS_ORIGINS: list[str] = ["*"]
     CORS_ORIGINS_REGEX: str = ""

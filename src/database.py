@@ -1,26 +1,27 @@
-from sqlalchemy import NullPool, create_engine
+from typing import AsyncGenerator
+
+from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
 from src.config import settings
 
-if settings.MODE == "TEST":
-    DATABASE_URL = settings.get_async_database_url()
-    DATABASE_PARAMS = {"poolclass": NullPool}
 
-    SYNC_DATABASE_URL = None
-    SYNC_DATABASE_PARAMS = {}
-else:
-    DATABASE_URL = settings.get_async_database_url()
-    DATABASE_PARAMS = {}
+DATABASE_URL = settings.get_async_database_url()
+DATABASE_PARAMS = {}
 
-    SYNC_DATABASE_URL = settings.get_database_url()
-    SYNC_DATABASE_PARAMS = {}
+SYNC_DATABASE_URL = settings.get_database_url()
+SYNC_DATABASE_PARAMS = {}
 
 
 engine = create_async_engine(DATABASE_URL, **DATABASE_PARAMS)
 async_session_maker = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
+
+async def async_session() -> AsyncGenerator:
+    """Returns session"""
+    async with async_session_maker() as session:
+        yield session
 
 # Used only to initialize DB!!!
 sync_session_maker = None

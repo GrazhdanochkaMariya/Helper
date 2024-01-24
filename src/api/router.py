@@ -61,7 +61,7 @@ async def process_google_sheets_updates(
 
 
 @router.post("/token")
-async def issue_access_token(
+async def get_access_token(
         request: Request,
         _: Any = Depends(swagger_login)
 ):

@@ -1,8 +1,7 @@
 import datetime
 from enum import Enum as EnumType
 
-from sqlalchemy import Column, DateTime, Integer, String
-from sqlalchemy.dialects.postgresql import ENUM
+from sqlalchemy import Column, DateTime, Integer, String, Enum
 
 from src.database import Base
 
@@ -33,7 +32,7 @@ class LeadContact(Base):
     id = Column(Integer, primary_key=True, nullable=False)
     lead_name = Column(String, nullable=False)
     linkedin_profile = Column(String, unique=True, nullable=False, index=True)
-    status = Column(ENUM(TypeEnum), default=TypeEnum.CONTACT)
+    status = Column(Enum(TypeEnum), default=TypeEnum.CONTACT)
     next_contact = Column(String)
 
     # support field

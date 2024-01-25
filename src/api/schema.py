@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, field_validator
 
 
 class ContactSchemaRead(BaseModel):
@@ -11,7 +11,7 @@ class ContactSchemaRead(BaseModel):
     next_contact: Optional[str]
     status: str
 
-    @validator("status", pre=True)
+    @field_validator("status", mode="before")
     def convert_status_to_upper(cls, v):
         """Validator to convert status to uppercase"""
         return v.upper()

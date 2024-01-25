@@ -42,6 +42,11 @@ async def db_session() -> AsyncGenerator[AsyncSession, None]:
     session.add(contact_2)
     await session.commit()
 
+    user_data = get_user_data()
+    user = User(**user_data)
+    session.add(user)
+    await session.commit()
+
     yield session
     await session.close()
 
@@ -72,6 +77,13 @@ def get_contact_data(status_type=TypeEnum.CONTACT) -> dict:
         "linkedin_profile": get_name(),
         "next_contact": f"{datetime.datetime.now()}",
         "status": status_type,
+    }
+
+
+def get_user_data() -> dict:
+    return {
+        "email": "any@email.com",
+        "hashed_password": "very_hashed_password",
     }
 
 

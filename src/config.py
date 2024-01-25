@@ -5,7 +5,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env")
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     app_name: str = "Andersen Marketing Lead Helper Project API"
     app_summary: str = "TODO"
@@ -31,10 +31,6 @@ class Settings(BaseSettings):
     DATABASE_HOST: str
     DATABASE_PORT: str
 
-    TEST_DATABASE_NAME: str
-    TEST_DATABASE_HOSTNAME: str
-    TEST_DB_PORT: str
-
     # CORS
     CORS_ORIGINS: list[str] = ["*"]
     CORS_ORIGINS_REGEX: str = ""
@@ -57,14 +53,6 @@ class Settings(BaseSettings):
             f"postgresql+asyncpg://{self.DATABASE_USER}:"
             f"{self.DATABASE_PASSWORD}@{self.DATABASE_HOST}:"
             f"{self.DATABASE_PORT}/{self.DATABASE_NAME}"
-        )
-        return database_url
-
-    def get_async_test_database_url(self):
-        database_url = (
-            f"postgresql+asyncpg://{self.DATABASE_USER}:"
-            f"{self.DATABASE_PASSWORD}@{self.TEST_DATABASE_HOSTNAME}:"
-            f"{self.TEST_DB_PORT}/{self.TEST_DATABASE_NAME}"
         )
         return database_url
 

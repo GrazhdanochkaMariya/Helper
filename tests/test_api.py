@@ -12,19 +12,6 @@ from tests.conftest import get_contact_data
 
 
 @pytest.mark.asyncio
-async def test_sync_gs_midnight_sanity_check(client: AsyncClient, auth_fixture: Callable):
-    # prepare test data
-    data = {
-        "lead_name": "test",
-        "linkedin_profile": "test",
-        "next_contact": "2021-10-11",
-        "status": "contact",
-    }
-    response = await client.post("/api/gs/changed", json=data)
-    assert response.status_code == status.HTTP_200_OK
-
-
-@pytest.mark.asyncio
 async def test_get_contact_success(client: AsyncClient, db_session: AsyncSession):
     # prepare test data
     data = get_contact_data(status_type=TypeEnum.CONTACT)

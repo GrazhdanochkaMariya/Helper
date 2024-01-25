@@ -23,7 +23,7 @@ from src.models import TypeEnum, LeadContact, User
 @pytest_asyncio.fixture()
 async def db_session() -> AsyncGenerator[AsyncSession, None]:
     """Start a test database session."""
-    DATABASE_URL = settings.get_async_test_database_url()
+    DATABASE_URL = settings.get_async_database_url()
     engine = create_async_engine(DATABASE_URL)
 
     async with engine.begin() as conn:
@@ -63,7 +63,6 @@ async def client(test_app: FastAPI) -> AsyncGenerator[AsyncClient, None]:
 def get_name() -> str:
     """Provides fake name for tests"""
     faker = Faker()
-
     return faker.name()
 
 
@@ -90,7 +89,7 @@ async def get_mock_user() -> Callable:
 
 
 @pytest_asyncio.fixture
-async def auth_fixture(get_mock_user) -> Callable:
+async def auth_fixture(get_mock_user: Callable) -> Callable:
     app.dependency_overrides[get_current_user] = get_mock_user
     yield get_mock_user
     app.dependency_overrides[get_current_user] = get_current_user

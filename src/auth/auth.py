@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import Union, Annotated
+from typing import Union
 
 from jose import jwt
 from passlib.context import CryptContext
@@ -19,7 +19,6 @@ from src.models import User
 security = HTTPBasic()
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-db_dependency = Annotated[AsyncSession, Depends(get_db_session)]
 
 
 def get_password_hash(password: str) -> str:
@@ -70,13 +69,11 @@ async def authenticate_user(
 
 async def swagger_login(
         request: Request,
-        session: db_dependency,
         credentials: HTTPBasicCredentials = Depends(security),
+        session: AsyncSession = Depends(get_db_session),
 ):
     """Authenticate user and get token"""
-    user = await authenticate_user(
-        session=session,email=str(credentials.username), password=str(credentials.password)
-    )
+    user = await authenticate_user(str(credentials.username), str(credentials.password), session)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

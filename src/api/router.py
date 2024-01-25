@@ -67,13 +67,12 @@ async def process_google_sheets_updates(
 @router.post("/token")
 async def get_access_token(
         request: Request,
-        _: Any = Depends(swagger_login),
         session: AsyncSession = Depends(get_db_session),
-
+        _: Any = Depends(swagger_login)
 ):
     """Get an access token for user authentication"""
     token = request.session.get("token")
-    user = await get_current_user(token=token, session=session)
+    user = await get_current_user(token, session)
     if user:
         access_token = create_access_token_for_headers({"sub": str(user.id)})
         return {"access_token": access_token, "token_type": "bearer"}

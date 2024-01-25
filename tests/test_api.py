@@ -1,3 +1,5 @@
+from typing import Callable
+
 import pytest
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -10,7 +12,7 @@ from tests.conftest import get_contact_data
 
 
 @pytest.mark.asyncio
-async def test_sync_gs_midnight_sanity_check(client: AsyncClient):
+async def test_sync_gs_midnight_sanity_check(client: AsyncClient, auth_fixture: Callable):
     # prepare test data
     data = {
         "lead_name": "test",
@@ -51,7 +53,7 @@ async def test_get_contact_fail(client: AsyncClient):
 
 @pytest.mark.asyncio
 async def test_process_google_sheets_non_exist_contact_status_401(
-        client: AsyncClient
+    client: AsyncClient,
 ):
     data = get_contact_data(status_type=TypeEnum.CONTACT)
     response = await client.post("/api/gs/changed", json=data)
@@ -61,8 +63,9 @@ async def test_process_google_sheets_non_exist_contact_status_401(
 
 @pytest.mark.asyncio
 async def test_process_google_sheets_non_exist_contact_status(
-        client: AsyncClient,
-        db_session: AsyncSession,
+    client: AsyncClient,
+    auth_fixture: Callable,
+    db_session: AsyncSession,
 ):
     data = get_contact_data(status_type=TypeEnum.CONTACT)
     response = await client.post("/api/gs/changed", json=data)
@@ -77,6 +80,7 @@ async def test_process_google_sheets_non_exist_contact_status(
 @pytest.mark.asyncio
 async def test_process_google_sheets_exist_contact_status(
         client: AsyncClient,
+        auth_fixture: Callable,
         db_session: AsyncSession,
 ):
     # prepare test data
@@ -96,6 +100,7 @@ async def test_process_google_sheets_exist_contact_status(
 @pytest.mark.asyncio
 async def test_process_google_sheets_exist_declined_status(
         client: AsyncClient,
+        auth_fixture: Callable,
         db_session: AsyncSession,
 ):
     # prepare test data
@@ -114,7 +119,10 @@ async def test_process_google_sheets_exist_declined_status(
 
 
 @pytest.mark.asyncio
-async def test_process_google_sheets_non_exist_declined_status(client: AsyncClient):
+async def test_process_google_sheets_non_exist_declined_status(
+        client: AsyncClient,
+        auth_fixture: Callable
+):
     data = get_contact_data(status_type=TypeEnum.DECLINED)
     response = await client.post("/api/gs/changed", json=data)
 
@@ -124,6 +132,7 @@ async def test_process_google_sheets_non_exist_declined_status(client: AsyncClie
 @pytest.mark.asyncio
 async def test_process_google_sheets_exist_dnm_status(
         client: AsyncClient,
+        auth_fixture: Callable,
         db_session: AsyncSession,
 ):
     # prepare test data

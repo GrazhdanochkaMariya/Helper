@@ -1,5 +1,6 @@
 from collections.abc import AsyncGenerator
 import datetime
+from typing import Callable
 
 import pytest
 import pytest_asyncio
@@ -12,16 +13,17 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
+from src.auth.dependencies import get_current_user
 from src.config import settings
 from src.database import Base, get_db_session
 from src.main import app
-from src.models import TypeEnum, LeadContact
+from src.models import TypeEnum, LeadContact, User
 
 
 @pytest_asyncio.fixture()
 async def db_session() -> AsyncGenerator[AsyncSession, None]:
     """Start a test database session."""
-    DATABASE_URL = settings.get_async_database_url()
+    DATABASE_URL = settings.get_async_test_database_url()
     engine = create_async_engine(DATABASE_URL)
 
     async with engine.begin() as conn:
@@ -65,10 +67,30 @@ def get_name() -> str:
     return faker.name()
 
 
-def get_contact_data(status_type = TypeEnum.CONTACT) -> dict:
+def get_contact_data(status_type=TypeEnum.CONTACT) -> dict:
     return {
         "lead_name": get_name(),
         "linkedin_profile": get_name(),
         "next_contact": f"{datetime.datetime.now()}",
         "status": status_type,
     }
+
+
+async def mock_get_user() -> User:
+    return User(
+        id=1,
+        email="masha@gmail.com",
+        hashed_password="hashed_password"
+    )
+
+
+@pytest_asyncio.fixture
+async def get_mock_user() -> Callable:
+    return mock_get_user
+
+
+@pytest_asyncio.fixture
+async def auth_fixture(get_mock_user) -> Callable:
+    app.dependency_overrides[get_current_user] = get_mock_user
+    yield get_mock_user
+    app.dependency_overrides[get_current_user] = get_current_user

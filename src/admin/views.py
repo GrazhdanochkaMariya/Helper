@@ -1,5 +1,7 @@
 from sqladmin import ModelView
+from sqlalchemy import event
 
+from src.auth.auth import get_password_hash
 from src.models import LeadContact, User
 
 
@@ -10,6 +12,12 @@ class UserAdmin(ModelView, model=User):
     column_list = [User.id, User.email]
     column_details_exclude_list = [User.hashed_password]
     can_delete = True
+
+    @event.listens_for(User.hashed_password, 'set', retval=True)
+    def hash_user_password(target, value, oldvalue, initiator):
+        if value != oldvalue:
+            return get_password_hash(value)
+        return value
 
 
 class LeadContactAdmin(ModelView, model=LeadContact):

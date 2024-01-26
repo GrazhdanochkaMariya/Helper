@@ -1,6 +1,14 @@
 # Marketing Lead Helper Tool
 
-#TODO Describe project
+Marketing Lead Helper Tool is a FastAPI-based application designed to streamline lead management processes for Andersen's lead generation department. Its primary functionalities include managing Google Sheets and providing a user-friendly interface for accessing various APIs.
+
+### Features
+
+Admin panel: Users can efficiently manage records stored in database directly through the application's admin panel. This includes creating, updating, and deleting records as needed. The application allows users to export the entire database of data in CSV format for further analysis or external use.
+
+Swagger API Documentation: The service is equipped with Swagger documentation, which provides users with a comprehensive overview of available APIs. Users can also generate new tokens for API access through Swagger.
+
+Script for Database Updates: A script on the Google Sheets side is integrated with the service, allowing for automatic updates to the database based on incoming information. This script requires a token for authentication, which can be obtained through the API in Swagger in case of expiration.
 
 ## Technologies
 - Python 3.11
@@ -27,5 +35,18 @@ Please, follow steps to prepare project for local development:
 3. Run migrations: `alembic upgrade head`
 
 ## APIs
-1. Swagger: `http://127.0.0.1:8000/docs`
-2. TODO
+
+1.Swagger: `http://127.0.0.1:8000/docs`. Log in with credentials that were created in database
+- /api/check/contact/ - API for cheking by LinkedIn profile if we have it in database
+- /api/gs/changed - API for managing changes in Google Sheets. Avaliable for request only with bearer token
+- /api/token - API for getting new token. Avaliable only in Swagger
+
+2.Admin Panel: `http://127.0.0.1:8000/admin`. Log in with credentials that were created in database
+- Users Tab: You can serach, edit, delete or export in CSV file admin users
+- Lead Contacts Tab: you can search, edit, delete, create or export in CSV file contacts from database
+
+## Developers
+
+Yahor Vavilau (Tech Lead) - Contact: y.vavilau@andersenlab.com
+
+Mariya Shakuro (Python Developer) - Contact: m.shakuro@andersenlab.com

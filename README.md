@@ -56,7 +56,7 @@ Please, follow steps to prepare project for local development:
 - /api/token - API for getting new token. Avaliable only in Swagger. Just execute it in Swagger. Returns a token valid for a year.
 
 2.Admin Panel: `http://127.0.0.1:8000/admin`. Log in with credentials that were created in database
-- Users Tab: You can serach, edit, delete or export in CSV file admin users
+- Users Tab: You can edit, delete, create or export in CSV file admin users
 - Lead Contacts Tab: you can search, edit, delete, create or export in CSV file contacts from database
 
 ## Developers

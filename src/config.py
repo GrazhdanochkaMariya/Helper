@@ -8,8 +8,12 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     app_name: str = "Andersen Marketing Lead Helper Project API"
-    app_summary: str = "TODO"
-    app_description: str = "TODO"
+    app_summary: str = ("Marketing Lead Helper Tool is a FastAPI-based application"
+                        " designed to streamline lead management processes for"
+                        " Andersen's lead generation department.")
+    app_description: str = ("Its primary functionalities include managing Google"
+                            " Sheets and providing a user-friendly interface for"
+                            " accessing various APIs.")
 
     # SECRET KEY IS USED FOR SECURING AUTH
     SECRET_KEY: str

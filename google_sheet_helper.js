@@ -1,11 +1,11 @@
 var API_URL = 'http://127.0.0.1:8000/api/gs/changed';
 var AUTH_TOKEN = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyIiwiZXhwIjoxNzM3NzMwNjQ0fQ.HWGioY_TVmykcfstgQsm_H6YjriAoMwWC2ISTWho6gE';
-var TARGET_COLUMN = 7;
+var TARGET_COLUMN = 6;
 var VALID_STATUSES = ['contact', 'declined', 'dnm'];
 
-function onEdit(e) {
-  var range = e.range;
-  var sheet = e.source.getActiveSheet();;
+function onEdit() {
+  var sheet = SpreadsheetApp.getActiveSheet();
+  var range = sheet.getActiveRange();
   var column = range.getColumn();
   var value = range.getValue().toLowerCase();
 

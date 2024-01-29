@@ -5,7 +5,7 @@ var VALID_STATUSES = ['contact', 'declined', 'dnm'];
 
 function onEdit(e) {
   var range = e.range;
-  var sheet = range.getSheet();
+  var sheet = e.source.getActiveSheet();;
   var column = range.getColumn();
   var value = range.getValue().toLowerCase();
 

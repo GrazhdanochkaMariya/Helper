@@ -70,7 +70,10 @@ async def get_access_token(
         session: AsyncSession = Depends(get_db_session),
         _: Any = Depends(swagger_login)
 ):
-    """Get an access token for user authentication"""
+    """Get an access token for user authentication.
+    The obtained token can be used to interact with the script.
+    The token has a lifespan of one year and can only be generated in Swagger.
+    If the token expires, you can simply replace it with a new one."""
     token = request.session.get("token")
     user = await get_current_user(token, session)
     if user:

@@ -37,10 +37,11 @@ Please, follow steps to prepare project for local development:
 ## APIs
 
 1.Swagger: `http://127.0.0.1:8000/docs`. Log in with credentials that were created in database
-- /api/check/contact/ - API for cheking by LinkedIn profile if we have it in database.
+- /api/check/contact/- API for cheking by LinkedIn profile if we have it in database.
   You can use it wherever you need: Swagger, Postman, plugin for browser. Pass in query params named "linkedin_profile" LinkedIn url when you use it. Returns contact data if contact exists in database. 
 - /api/gs/changed - API for managing changes in Google Sheets. Available for request only with bearer token. Pass Bearer token to header "Authorization" of the request. Pass the contact data to the request body as JSON.The only valid statuses: DNM, CONTACT, DECLINED, REQUEST. Here are the fields:
 
+```JSON
 {
 
   "lead_name": "name_of_the_contact",
@@ -52,6 +53,7 @@ Please, follow steps to prepare project for local development:
   "status": "any_valid_status"
   
 }
+```
 
 - /api/token - API for getting new token. Avaliable only in Swagger. Just execute it in Swagger. Returns a token valid for a year.
 

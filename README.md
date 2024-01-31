@@ -1,6 +1,6 @@
 # Andersen Lead Generation Tool
 
-Andersen Lead Generation Tool is a FastAPI-based application designed to streamline lead management processes for Andersen's lead generation department. Its primary functionalities include managing Google Sheets and providing a user-friendly interface for accessing various APIs.
+Andersen Lead Generation Tool is a FastAPI-based application designed to streamline lead management processes for Andersen's lead generation department. Its primary functionalities include managing Google Sheets and providing a user-friendly interface for accessing APIs.
 
 ### Features
 

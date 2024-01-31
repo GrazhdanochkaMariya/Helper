@@ -1,6 +1,6 @@
-# Marketing Lead Helper Tool
+# Andersen Lead Generation Tool
 
-Marketing Lead Helper Tool is a FastAPI-based application designed to streamline lead management processes for Andersen's lead generation department. Its primary functionalities include managing Google Sheets and providing a user-friendly interface for accessing various APIs.
+Andersen Lead Generation Tool is a FastAPI-based application designed to streamline lead management processes for Andersen's lead generation department. Its primary functionalities include managing Google Sheets and providing a user-friendly interface for accessing various APIs.
 
 ### Features
 
@@ -25,7 +25,7 @@ Please, follow steps to prepare project for local development:
 4. Create `.env` file from `.env.example`.
 5. Setup database: `docker compose up -d`
 6. Run migrations: `alembic upgrade head`
-7. Initialise basic data: `python -m src.scripts.init_db`
+7. Initialise basic data: `python -m src.scripts.init_db` (create first admin user)
 8. Install pre-commit hooks: `pre-commit install`
 9. Run `uvicorn src.main:app --reload`
 

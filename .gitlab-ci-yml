@@ -1,0 +1,15 @@
+stages:
+  - deploy
+
+deploy:
+  stage: deploy
+  image: AND_DOCKER_PROXY_REGISTRY_NAME/ubuntu:22
+  tags:
+   - docker
+  before_script: 
+    - apt-get update -y
+    - apt-get install -y git rsync
+  script:
+    - rsync -hrvz --delete --exclude=.git ./ $SSHUSER@$SERVER:$APP_PATH
+    - ssh $SSHUSER@$SERVER "source $ENV && sudo systemctl restart $SERVICE_NAME"
+

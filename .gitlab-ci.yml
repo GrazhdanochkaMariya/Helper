@@ -24,3 +24,5 @@ deploy:
     #- ssh $SSHUSER@$SERVER "cd $APP_PATH && sudo uvicorn src.main:app --reload && sudo systemctl restart $SERVICE_NAME"
     - cd $APP_PATH && sudo uvicorn src.main:app && sudo systemctl restart $SERVICE_NAME
     - if [ "`curl --insecure -s https://127.0.0.1/-/health | jq .status`" != "up" ]; then echo "Success"; else "Error"; fi
+  only:
+    - master  

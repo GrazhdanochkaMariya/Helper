@@ -11,15 +11,14 @@ deploy:
     - apt-get install -y git rsync
     - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
     - eval "$(ssh-agent -s)"
-    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
-    - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
+    # - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
+    # - mkdir -p ~/.ssh
+    # - chmod 700 ~/.ssh
     - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
-    - ssh -vvv -i ~/.ssh/id_rsa $SSHUSER@$SERVER
   script:
     - rsync -hrvz --exclude=.git ./ $SSHUSER@$SERVER:$APP_PATH
     - echo $ENV > .env
     - scp .env $SSHUSER@$SERVER # Copy the local .env file to the remote server
-    - ssh $SSHUSER@$SERVER "sudo systemctl restart $SERVICE_NAME"
+    - ssh $SSHUSER@$SERVER "sudo uvicorn $APP_PATH/src.main:app --reload && sudo systemctl restart $SERVICE_NAME"

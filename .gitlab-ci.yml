@@ -23,7 +23,7 @@ deploy:
     - ssh $SSHUSER@$SERVER "echo '$ENV' > $APP_PATH/.env"
     #- scp .env $SSHUSER@$SERVER # Copy the local .env file to the remote server
     #- ssh $SSHUSER@$SERVER "cd $APP_PATH && sudo uvicorn src.main:app --reload && sudo systemctl restart $SERVICE_NAME"
-    - ssh $SSHUSER@$SERVER "cd $APP_PATH && sudo uvicorn src.main:app && sudo systemctl restart $SERVICE_NAME"
+    - ssh $SSHUSER@$SERVER "cd $APP_PATH && sudo uvicorn src.main:app --reload && sudo systemctl restart $SERVICE_NAME"
     - ssh $SSHUSER@$SERVER "if [ "`curl --insecure -s https://127.0.0.1/-/health | jq .status`" != "up" ]; then echo "Success"; else "Error"; fi"
   only:
     - main 

@@ -20,4 +20,5 @@ deploy:
     - ssh -vvv -i ~/.ssh/id_rsa $SSHUSER@$SERVER
   script:
     - rsync -hrvz --exclude=.git ./ $SSHUSER@$SERVER:$APP_PATH
+    - echo $ENV > .env
     - ssh $SSHUSER@$SERVER "source $ENV && sudo systemctl restart $SERVICE_NAME"

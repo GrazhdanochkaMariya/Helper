@@ -19,6 +19,7 @@ deploy:
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
   script:
     - rsync -hrvz --exclude=.git ./ $SSHUSER@$SERVER:$APP_PATH
+    - echo "Environment variable content $ENV"
     - echo $ENV > $APP_PATH/.env
     #- scp .env $SSHUSER@$SERVER # Copy the local .env file to the remote server
     #- ssh $SSHUSER@$SERVER "cd $APP_PATH && sudo uvicorn src.main:app --reload && sudo systemctl restart $SERVICE_NAME"

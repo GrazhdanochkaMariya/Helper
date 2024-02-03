@@ -19,5 +19,5 @@ deploy:
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
     - ssh -vvv -i ~/.ssh/id_rsa $SSHUSER@$SERVER
   script:
-    - rsync -hrvz --delete --exclude=.git ./ $SSHUSER@$SERVER:$APP_PATH
-    - ssh $SSHUSER@$SERVER -i id_rsa "source $ENV && sudo systemctl restart $SERVICE_NAME"
+    - rsync -hrvz --exclude=.git ./ $SSHUSER@$SERVER:$APP_PATH
+    - ssh $SSHUSER@$SERVER "source $ENV && sudo systemctl restart $SERVICE_NAME"

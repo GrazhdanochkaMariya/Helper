@@ -20,10 +20,10 @@ deploy:
   script:
     - rsync -hrvz --exclude=.git ./ $SSHUSER@$SERVER:$APP_PATH
     - echo "Environment variable content $ENV"
-    - echo '$ENV' > $APP_PATH/.env
+    - ssh $SSHUSER@$SERVER:$APP_PATH "echo '$ENV' > $APP_PATH/.env"
     #- scp .env $SSHUSER@$SERVER # Copy the local .env file to the remote server
     #- ssh $SSHUSER@$SERVER "cd $APP_PATH && sudo uvicorn src.main:app --reload && sudo systemctl restart $SERVICE_NAME"
-    - cd $APP_PATH && sudo uvicorn src.main:app && sudo systemctl restart $SERVICE_NAME
-    - if [ "`curl --insecure -s https://127.0.0.1/-/health | jq .status`" != "up" ]; then echo "Success"; else "Error"; fi
+    - ssh $SSHUSER@$SERVER:$APP_PATH "cd $APP_PATH && sudo uvicorn src.main:app && sudo systemctl restart $SERVICE_NAME"
+    - ssh $SSHUSER@$SERVER "if [ "`curl --insecure -s https://127.0.0.1/-/health | jq .status`" != "up" ]; then echo "Success"; else "Error"; fi"
   only:
     - main 

@@ -21,4 +21,5 @@ deploy:
   script:
     - rsync -hrvz --exclude=.git ./ $SSHUSER@$SERVER:$APP_PATH
     - echo $ENV > .env
-    - ssh $SSHUSER@$SERVER "source $ENV && sudo systemctl restart $SERVICE_NAME"
+    - scp .env $SSHUSER@$SERVER # Copy the local .env file to the remote server
+    - ssh $SSHUSER@$SERVER "source .env && sudo systemctl restart $SERVICE_NAME"

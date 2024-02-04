@@ -3,23 +3,19 @@ stages:
 
 deploy:
   stage: deploy
-  image: $AND_DOCKER_PROXY_REGISTRY_NAME/ubuntu
+  image: $AND_DOCKER_PROXY_REGISTRY_NAME/ubuntu:lastest
   tags:
    - docker
   before_script: 
     - apt-get update -y
-    - apt-get install -y git rsync
-    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - apt-get install -y git rsync openssh-client
     - eval "$(ssh-agent -s)"
-    # - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
     - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
-    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-    - chmod 600 ~/.ssh/id_rsa
+    #- echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
   script:
     - rsync -hrvz --exclude=.git ./ $SSHUSER@$SERVER:$APP_PATH
-    - echo "Environment variable content $ENV"
     - ssh $SSHUSER@$SERVER "echo '$ENV' > $APP_PATH/.env"
     #- scp .env $SSHUSER@$SERVER # Copy the local .env file to the remote server
     #- ssh $SSHUSER@$SERVER "cd $APP_PATH && sudo uvicorn src.main:app --reload && sudo systemctl restart $SERVICE_NAME"

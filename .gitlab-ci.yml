@@ -3,7 +3,7 @@ stages:
 
 deploy:
   stage: deploy
-  image: ubuntu:22
+  image: $AND_DOCKER_PROXY_REGISTRY_NAME/ubuntu
   tags:
    - docker
   before_script: 

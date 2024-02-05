@@ -15,8 +15,6 @@ deploy:
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
   script:
     - rsync -hrvz --exclude=.git ./ $SSHUSER@$SERVER:$APP_PATH
-    - echo $ENV
-    - ssh $SSHUSER@$SERVER "cd $APP_PATH && source $VENV && export $(echo $ENV | xargs) && env && sudo alembic upgrade head && sudo systemctl restart $SERVICE_NAME"
-    #- ssh $SSHUSER@$SERVER "if [ "`curl --insecure -s https://127.0.0.1/-/health | jq .status`" != "up" ]; then echo "Success"; else "Error"; fi"
+    - ssh $SSHUSER@$SERVER "cd $APP_PATH && source $VENV && echo $ENV > .env && sudo alembic upgrade head && sudo systemctl restart $SERVICE_NAME && .env"
   only:
     - main 

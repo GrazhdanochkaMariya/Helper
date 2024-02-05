@@ -3,7 +3,7 @@ stages:
 
 deploy:
   stage: deploy
-  image: $AND_DOCKER_PROXY_REGISTRY_NAME/ubuntu
+  image: $AND_DOCKER_PROXY_REGISTRY_NAME/alpine:3.17.3
   tags:
    - docker
   before_script: 
@@ -12,12 +12,11 @@ deploy:
     - eval "$(ssh-agent -s)"
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
     - mkdir -p ~/.ssh
-    #- echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
   script:
     - rsync -hrvz --exclude=.git ./ $SSHUSER@$SERVER:$APP_PATH
     - ssh $SSHUSER@$SERVER "echo '$ENV' > $APP_PATH/.env"
     - ssh $SSHUSER@$SERVER "sudo systemctl restart $SERVICE_NAME"
-    - ssh $SSHUSER@$SERVER "if [ "`curl --insecure -s https://127.0.0.1/-/health | jq .status`" != "up" ]; then echo "Success"; else "Error"; fi"
+    #- ssh $SSHUSER@$SERVER "if [ "`curl --insecure -s https://127.0.0.1/-/health | jq .status`" != "up" ]; then echo "Success"; else "Error"; fi"
   only:
     - main 

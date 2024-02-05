@@ -7,8 +7,8 @@ deploy:
   tags:
    - docker
   before_script: 
-    - apt-get update -y
-    - apt-get install -y git rsync openssh-client
+    - apk update
+    - apk add --no-cache git rsync openssh-client
     - eval "$(ssh-agent -s)"
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
     - mkdir -p ~/.ssh

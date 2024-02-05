@@ -15,6 +15,7 @@ deploy:
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
   script:
     - rsync -hrvz --exclude=.git ./ $SSHUSER@$SERVER:$APP_PATH
-    - ssh $SSHUSER@$SERVER "cd $APP_PATH && source $VENV && echo '$ENV' > $APP_PATH/.env && sudo alembic upgrade head && sudo systemctl restart $SERVICE_NAME && echo "RESTARTED" && rm .env"
+    - ssh $SSHUSER@$SERVER "echo '$ENV' > $APP_PATH/.env"
+    - ssh $SSHUSER@$SERVER "cd $APP_PATH && source $VENV && sudo alembic upgrade head && sudo systemctl restart $SERVICE_NAME && echo "RESTARTED" && rm .env"
   only:
     - main 

@@ -16,7 +16,7 @@ deploy:
   script:
     - rsync -hrvz --exclude=.git ./ $SSHUSER@$SERVER:$APP_PATH
     - echo $ENV
-    - ssh $SSHUSER@$SERVER "export $ENV && source $VENV && cd $APP_PATH && sudo alembic upgrade head && sudo systemctl restart $SERVICE_NAME"
+    - ssh $SSHUSER@$SERVER "export $(echo $ENV | xargs) && source $VENV && cd $APP_PATH && sudo alembic upgrade head && sudo systemctl restart $SERVICE_NAME"
     #- ssh $SSHUSER@$SERVER "if [ "`curl --insecure -s https://127.0.0.1/-/health | jq .status`" != "up" ]; then echo "Success"; else "Error"; fi"
   only:
     - main 

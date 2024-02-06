@@ -1,5 +1,6 @@
-var API_URL = 'http://127.0.0.1:8000/api/gs/changed';
-var AUTH_TOKEN = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyIiwiZXhwIjoxNzM3NzMwNjQ0fQ.HWGioY_TVmykcfstgQsm_H6YjriAoMwWC2ISTWho6gE';
+var API_URL = 'https://lead-gen-ext.andersenlab.dev/api/gs/changed';
+var AUTH_TOKEN = '<paste_your_token_here>';
+var AUTH_TOKEN_WITH_BEARER = 'Bearer ' + AUTH_TOKEN;
 var TARGET_COLUMN = 7;
 var VALID_STATUSES = ['contact', 'declined', 'dnm'];
 
@@ -28,7 +29,7 @@ function onEdit() {
         'method': 'post',
         'contentType': 'application/json',
         'headers': {
-          'Authorization': AUTH_TOKEN
+          'Authorization': AUTH_TOKEN_WITH_BEARER
         },
         'payload': JSON.stringify(payload)
       };

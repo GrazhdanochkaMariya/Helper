@@ -61,6 +61,34 @@ Please, follow steps to prepare project for local development:
 - Users Tab: You can edit, delete, create or export in CSV file admin users
 - Lead Contacts Tab: you can search, edit, delete, create or export in CSV file contacts from database
 
+## Tutorial
+
+To use `Admin Panel`:
+- Go to https://lead-gen-ext.andersenlab.dev/admin.
+- Enter your admin credentials if prompted.
+- In the Users Tab, you can edit, delete, create, or export admin users to a CSV file.
+- In the Lead Contacts Tab, you can search, edit, delete, create, or export contacts from the database to a CSV file.
+- Click "Logout" if you need to log out.
+
+To use the `Swagger documentation`:
+- Go to https://lead-gen-ext.andersenlab.dev/docs.
+- Enter your admin credentials if prompted.
+- Here you can find `/api/token` that you need for the `script` (instructions below)
+
+To use the `script` with Google Sheets:
+- In your Google Sheet, go to `Extensions` -> `Apps Script`.
+- Paste the script into the main window there and click 'Save' above.
+- In the Swagger documentation, open `/api/token`, click `Try it out`, then click `Execute`, and copy the token that appears (For example: "eyJhbGciOiJIUz5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZ4NzcwMDgyfQ.XGKoKy0Ff_fVuV4aZ9iGv0hSHt0LNlUeg").
+- Paste the token in the script into the field `var AUTH_TOKEN` and click 'Save' below.
+
+To create `trigger` in Google Sheets:
+- Create a New Trigger by selecting `Triggers` in the tab from the left.
+- Click the `+ Add Trigger` button.
+- Choose the function and trigger settings.
+- Specify additional parameters, if necessary. Choose type of event as `On changes`
+- Save your trigger settings.
+- Authorize the trigger to run, if prompted.
+
 ## Developers
 
 Yahor Vavilau (Tech Lead) - Contact: y.vavilau@andersenlab.com

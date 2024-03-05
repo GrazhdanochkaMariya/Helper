@@ -1,6 +1,6 @@
-# Marketing Lead Helper Tool
+# Helper Tool
 
-Marketing Lead Helper Tool is a FastAPI-based application designed to streamline lead management processes for Andersen's lead generation department. Its primary functionalities include managing Google Sheets and providing a user-friendly interface for accessing various APIs.
+Helper Tool is a FastAPI-based application designed to streamline lead management processes. Its primary functionalities include managing Google Sheets and providing a user-friendly interface for accessing various APIs.
 
 ### Features
 
@@ -60,9 +60,3 @@ Please, follow steps to prepare project for local development:
 2.Admin Panel: `http://127.0.0.1:8000/admin`. Log in with credentials that were created in database
 - Users Tab: You can edit, delete, create or export in CSV file admin users
 - Lead Contacts Tab: you can search, edit, delete, create or export in CSV file contacts from database
-
-## Developers
-
-Yahor Vavilau (Tech Lead) - Contact: y.vavilau@andersenlab.com
-
-Mariya Shakuro (Python Developer) - Contact: m.shakuro@andersenlab.com

@@ -27,18 +27,21 @@ class GoogleSheetsProcessorViews(APIView):
         # TODO validation
 
         if data["status"] == LeadContact.TypeEnum.CONTACT:
-            contact = await LeadContactDAO().select_one_or_none_filter_by(
-                linkedin_profile=data.linkedin_profile
-            )
-            if not contact:
-                await LeadContactDAO().add_rows(data=data)
+            # contact = await LeadContactDAO().select_one_or_none_filter_by(
+            #     linkedin_profile=data.linkedin_profile
+            # )
+            # if not contact:
+            #     await LeadContactDAO().add_rows(data=data)
+            pass
 
         elif data["status"] == LeadContact.TypeEnum.DECLINED:
-            await LeadContactDAO().delete_rows_filer_by(
-                linkedin_profile=data.linkedin_profile
-            )
+            # await LeadContactDAO().delete_rows_filer_by(
+            #     linkedin_profile=data.linkedin_profile
+            # )
+            pass
 
         elif data["status"] == LeadContact.TypeEnum.DNM:
-            await LeadContactDAO().update_status_by_linkedin_profile(
-                linkedin_profile=data.linkedin_profile, status=data.status
-            )
+            # await LeadContactDAO().update_status_by_linkedin_profile(
+            #     linkedin_profile=data.linkedin_profile, status=data.status
+            # )
+            pass

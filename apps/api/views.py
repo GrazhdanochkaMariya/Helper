@@ -1,10 +1,19 @@
+from django.conf import settings
+from django.http import JsonResponse
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema, OpenApiParameter, inline_serializer
-from rest_framework import status, serializers
+from rest_framework import status, serializers, permissions
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from apps.api.models import LeadContact
+
+
+class AllowDebugAuthMixin:
+    permission_classes = [permissions.IsAuthenticated] if settings.AUTH_ENABLED else []
 
 
 @extend_schema(
@@ -26,7 +35,7 @@ from apps.api.models import LeadContact
         ),
     }
 )
-class ContactAPIView(APIView):
+class ContactAPIView(AllowDebugAuthMixin, APIView):
     def get(self, request):
         query_params = getattr(request, 'query_params', {})
         try:
@@ -43,7 +52,7 @@ class ContactAPIView(APIView):
 
 
 @extend_schema()
-class GoogleSheetsProcessorViews(APIView):
+class GoogleSheetsProcessorViews(AllowDebugAuthMixin, APIView):
     def post(self, request, **kwargs):
         data = request.data
         # TODO validation
@@ -67,3 +76,32 @@ class GoogleSheetsProcessorViews(APIView):
             #     linkedin_profile=data.linkedin_profile, status=data.status
             # )
             pass
+
+
+class ObtainTokenView(APIView):
+    authentication_classes = [SessionAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(
+        request=inline_serializer(
+            name='ObtainTokenRequest',
+            fields={}
+        ),
+        responses={
+            (status.HTTP_200_OK, 'application/json'): inline_serializer(
+               name='ObtainTokenResponse',
+               fields={
+                   'access_token': serializers.CharField(),
+                   'refresh_token': serializers.CharField(),
+               }
+            ),
+        }
+    )
+    def post(self, request, **kwargs):
+        user = request.user
+        token = RefreshToken.for_user(user)  # generate token without username & password
+        response = {
+            "access_token": str(token.access_token),
+            "refresh_token": str(token),
+        }
+        return JsonResponse(response, status=status.HTTP_200_OK)

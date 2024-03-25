@@ -11,8 +11,10 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 import os
+from datetime import timedelta
 
 import environ
+from corsheaders.defaults import default_headers
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -61,6 +63,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
     'drf_spectacular',
+    'drf_spectacular_sidecar',
     'apps.api',
 ]
 
@@ -69,6 +72,7 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "csp.middleware.CSPMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -158,9 +162,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
-    ],
-    "DEFAULT_FILTER_BACKENDS": [
-        "django_filters.rest_framework.DjangoFilterBackend",
+        "rest_framework.authentication.SessionAuthentication",
     ],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
@@ -176,4 +178,39 @@ SPECTACULAR_SETTINGS = {
     "SERVE_PERMISSIONS": [
         "rest_framework.permissions.IsAuthenticated",
     ],
+    'SWAGGER_UI_DIST': 'SIDECAR',
+    'SWAGGER_UI_FAVICON_HREF': 'SIDECAR',
+}
+CSP_DEFAULT_SRC = ("'self'", "'unsafe-inline'")
+CSP_IMG_SRC = ("'self'", "data:")
+
+SECURE_HSTS_SECONDS = 3600
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+
+# CORS Settings
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOW_METHODS = ["GET", "OPTIONS", "PATCH", "POST", "DELETE", "PUT"]
+
+CORS_ALLOW_HEADERS = list(default_headers) + ["Cache-Control", "Pragma", "Expires"]
+
+if DEBUG:
+    CORS_ORIGIN_ALLOW_ALL = True
+else:
+    CORS_ALLOWED_ORIGINS = [
+        "https://*",
+    ]
+
+# AUTH settings
+SIMPLE_JWT = {
+    "ALGORITHM": "HS256",
+    "AUTH_HEADER_TYPES": ("JWT",),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=365),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=365),
 }

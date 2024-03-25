@@ -3,7 +3,7 @@ from rest_framework import serializers
 from apps.api.models import LeadContact
 
 
-class LeadContactSerializer(serializers.Serializer):
+class LeadContactRequestSerializer(serializers.Serializer):
     """Serializer for profile"""
     lead_name = serializers.CharField(max_length=255)
     linkedin_profile = serializers.CharField(max_length=255)
@@ -16,5 +16,8 @@ class LeadContactSerializer(serializers.Serializer):
             raise serializers.ValidationError("Invalid status")
         return value.upper()
 
-    def create(self, validated_data):
-        return LeadContact.objects.create(**validated_data)
+
+class LeadContactSerializer(serializers.ModelSerializer):
+    class Meta:
+        models = LeadContact
+        fields = ('__all__', )

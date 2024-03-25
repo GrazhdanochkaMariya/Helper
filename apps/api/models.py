@@ -1,14 +1,6 @@
 from django.db import models
 
 
-class User(models.Model):
-    email = models.CharField(max_length=255, unique=True)
-    hashed_password = models.CharField(max_length=255)
-
-    def __str__(self):
-        return self.email
-
-
 class LeadContact(models.Model):
     class TypeEnum(models.TextChoices):
         CONTACT = "CONTACT"

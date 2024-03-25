@@ -16,6 +16,6 @@ deploy:
   script:
     - rsync -hrvz --exclude=.git ./ $SSHUSER@$SERVER:$APP_PATH
     - ssh $SSHUSER@$SERVER "echo '$ENV' > $APP_PATH/.env"
-    - ssh $SSHUSER@$SERVER "cd $APP_PATH && source $VENV && sudo alembic upgrade head && sudo systemctl restart $SERVICE_NAME"
+    - ssh $SSHUSER@$SERVER "cd $APP_PATH && source $VENV && sudo python manage.py migrate && sudo systemctl restart $SERVICE_NAME"
   only:
     - main 

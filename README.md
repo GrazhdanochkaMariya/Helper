@@ -94,3 +94,28 @@ To create `trigger` in Google Sheets:
 Yahor Vavilau (Tech Lead) - Contact: y.vavilau@andersenlab.com
 
 Mariya Shakuro (Python Developer) - Contact: m.shakuro@andersenlab.com
+
+
+### Some NGINX magic
+
+```bash
+listen 443 ssl http2;
+listen [::]:443 ssl http2;
+
+add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload" always;
+add_header X-XSS-Protection "1; mode=block";
+add_header X-Frame-Options "SAMEORIGIN";
+add_header Content-Security-Policy "default-src 'self' http: https: data: blob: 'unsafe-inline'" always;
+
+server_name <>;
+
+ssl_protocols TLSv1.2 TLSv1.3;
+ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
+ssl_prefer_server_ciphers on;
+```
+
+## How to run django 
+
+```bash
+venv/bin/gunicorn -c configs/gunicorn.conf.py
+```

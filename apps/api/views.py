@@ -10,6 +10,7 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from apps.api.models import LeadContact
+from apps.api.serializers import LeadContactSerializer
 
 
 class AllowDebugAuthMixin:
@@ -55,28 +56,34 @@ class ContactAPIView(AllowDebugAuthMixin, APIView):
 class GoogleSheetsProcessorViews(AllowDebugAuthMixin, APIView):
     def post(self, request, **kwargs):
         data = request.data
-        # TODO validation
+        serializer = LeadContactSerializer(data=data)
 
-        if data["status"] == LeadContact.TypeEnum.CONTACT:
-            # contact = await LeadContactDAO().select_one_or_none_filter_by(
-            #     linkedin_profile=data.linkedin_profile
-            # )
-            # if not contact:
-            #     await LeadContactDAO().add_rows(data=data)
-            pass
+        if serializer.is_valid():
+            if data["status"] == LeadContact.TypeEnum.CONTACT:
+                lead_contact = LeadContact.objects.filter(linkedin_profile=data["linkedin_profile"])
+                if not lead_contact:
+                    serializer.save()
+                    return Response("Lead contact created", status=status.HTTP_201_CREATED)
+                else:
+                    return Response("Lead contact already exists", status=status.HTTP_200_OK)
 
-        elif data["status"] == LeadContact.TypeEnum.DECLINED:
-            # await LeadContactDAO().delete_rows_filer_by(
-            #     linkedin_profile=data.linkedin_profile
-            # )
-            pass
+            elif data["status"] == LeadContact.TypeEnum.DECLINED:
+                lead_contact = LeadContact.objects.filter(linkedin_profile=data["linkedin_profile"])
+                if lead_contact:
+                    lead_contact.delete()
+                    return Response("Lead contact deleted", status=status.HTTP_200_OK)
+                else:
+                    return Response("Lead contact does not exist", status=status.HTTP_200_OK)
 
-        elif data["status"] == LeadContact.TypeEnum.DNM:
-            # await LeadContactDAO().update_status_by_linkedin_profile(
-            #     linkedin_profile=data.linkedin_profile, status=data.status
-            # )
-            pass
-
+            elif data["status"] == LeadContact.TypeEnum.DNM:
+                lead_contact = LeadContact.objects.filter(linkedin_profile=data["linkedin_profile"])
+                if lead_contact:
+                    lead_contact.update(status=LeadContact.TypeEnum.DNM)
+                    return Response("Lead contact status updated to DNM", status=status.HTTP_200_OK)
+                else:
+                    return Response("Lead contact does not exist", status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ObtainTokenView(APIView):
     authentication_classes = [SessionAuthentication]

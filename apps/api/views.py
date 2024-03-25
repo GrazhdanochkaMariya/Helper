@@ -1,10 +1,31 @@
-from rest_framework import status
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema, OpenApiParameter, inline_serializer
+from rest_framework import status, serializers
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from apps.api.models import LeadContact
 
 
+@extend_schema(
+    parameters=[
+        OpenApiParameter(
+            "linkedin_profile",
+            OpenApiTypes.STR,
+            OpenApiParameter.QUERY,
+            required=True,
+            description="Linkedin profile name",
+        ),
+    ],
+    responses={
+        (status.HTTP_200_OK, 'application/json'): inline_serializer(
+           name='ContactAPIResponse',
+           fields={
+               'lead_name': serializers.CharField(),
+           }
+        ),
+    }
+)
 class ContactAPIView(APIView):
     def get(self, request):
         query_params = getattr(request, 'query_params', {})
@@ -21,6 +42,7 @@ class ContactAPIView(APIView):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
 
+@extend_schema()
 class GoogleSheetsProcessorViews(APIView):
     def post(self, request, **kwargs):
         data = request.data
